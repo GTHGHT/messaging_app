@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:messaging_app/screens/access_screens.dart';
-import 'package:messaging_app/screens/landing_screens.dart';
-import 'package:messaging_app/screens/login_screens.dart';
+import 'package:messaging_app/screens/access_screen.dart';
+import 'package:messaging_app/screens/landing_screen.dart';
+import 'package:messaging_app/screens/login_screen.dart';
 
 void main() {
   runApp(const Kongko());
