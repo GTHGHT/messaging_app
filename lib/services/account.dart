@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class Account extends ChangeNotifier {
+class AuthAccess extends ChangeNotifier {
   bool loading = false;
   bool isLoggedIn = false;
   FirebaseAuth _auth = FirebaseAuth.instance;
@@ -41,17 +41,18 @@ class Account extends ChangeNotifier {
         email: email.text,
         password: password.text,
       );
-        await _firestore
-            .collection("users")
-            .doc(newUser.user!.uid)
-            .set({
-          "username": username.text,
-          "email": email.text,
-          "password": password.text,
-        });
-        showSnackBar("Berhasil Registrasi");
-        return true;
-
+      await _auth.signInWithEmailAndPassword(
+        email: email.text,
+        password: password.text,
+      );
+      isLoggedIn = true;
+      await _firestore.collection("users").doc(newUser.user!.uid).set({
+        "image": "https://firebasestorage.googleapis.com/v0/b/kongko-ee34d.appspot.com/o/default_profile.png?alt=media&token=b11b4779-be0e-4de4-b501-c32fe3e9b4c9",
+        "username": username.text,
+        "email": email.text,
+      });
+      showSnackBar("Berhasil Registrasi");
+      return true;
     } on FirebaseAuthException catch (e) {
       if (e.code == "email-already-in-use") {
         showSnackBar("Email Sudah Terdaftar, Silahkan Login");
@@ -76,6 +77,16 @@ class Account extends ChangeNotifier {
   }) async {
     try {
       showLoading(true);
+      if (email.text.isEmpty || password.text.length < 5) {
+        showSnackBar("Isi Email dan Password Anda");
+        throw Exception();
+      }
+
+      await _auth.signInWithEmailAndPassword(
+        email: email.text,
+        password: password.text,
+      );
+      isLoggedIn = true;
       showSnackBar("Berhasil Register");
       return true;
     } on FirebaseAuthException catch (e) {
@@ -92,5 +103,11 @@ class Account extends ChangeNotifier {
     } finally {
       showLoading(false);
     }
+  }
+
+  void logout() {
+    _auth.signOut();
+    isLoggedIn = false;
+    notifyListeners();
   }
 }

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../services/account.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -86,11 +89,11 @@ class _RegisterScreensState extends State<RegisterScreen> {
                   decoration: InputDecoration(hintText: "Konfirmasi Password"),
                   style: Theme.of(context).textTheme.bodyMedium,
                   buildCounter: (
-                      BuildContext context, {
-                        required int currentLength,
-                        required int? maxLength,
-                        required bool isFocused,
-                      }) {
+                    BuildContext context, {
+                    required int currentLength,
+                    required int? maxLength,
+                    required bool isFocused,
+                  }) {
                     return Text(
                       '$currentLength Karakter',
                     );
@@ -103,8 +106,28 @@ class _RegisterScreensState extends State<RegisterScreen> {
               SizedBox(
                 width: MediaQuery.of(context).size.width / 2,
                 child: ElevatedButton(
-                  onPressed: null,
-                  child: Text("Login"),
+                  onPressed: () {
+                    context
+                        .read<AuthAccess>()
+                        .register(
+                          username: usernameController,
+                          email: emailController,
+                          password: passwordController,
+                          confirmPassword: confirmPasswordController,
+                          showSnackBar: (String message) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(message),
+                              ),
+                            );
+                          },
+                        )
+                        .then(
+                          (value) =>
+                              Navigator.pushReplacementNamed(context, "/main"),
+                        );
+                  },
+                  child: Text("Register"),
                 ),
               ),
               SizedBox(
