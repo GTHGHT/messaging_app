@@ -50,7 +50,7 @@ class LandingScreens extends StatelessWidget {
       },
       pages: [
         PageViewModel(
-          title: "Selamat Datang di Kongko",
+          title: "Hello Guysss!!! Selamat Datang Di Aplikasi Kongko",
           body:
               "Aplikasi pesan online karya anak bangsa yang bisa diakses kapanpun dan dimanapun.",
           image: Theme.of(context).brightness == Brightness.light
