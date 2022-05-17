@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class AccessScreens extends StatelessWidget {
-  const AccessScreens({Key? key}) : super(key: key);
+class AccessScreen extends StatelessWidget {
+  const AccessScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +31,10 @@ class AccessScreens extends StatelessWidget {
               ),
               SizedBox(
                 width: MediaQuery.of(context).size.width / 2,
-                child: const ElevatedButton(
-                  onPressed: null,
+                child: ElevatedButton(
+                  onPressed: (){
+                    Navigator.of(context).pushNamed("/register");
+                  },
                   child: Text("Register"),
                 ),
               ),
