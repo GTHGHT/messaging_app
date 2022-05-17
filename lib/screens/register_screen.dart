@@ -36,9 +36,20 @@ class _RegisterScreensState extends State<RegisterScreen> {
               SizedBox(
                 width: (MediaQuery.of(context).size.width / 6) * 5,
                 child: TextField(
-                  keyboardType: TextInputType.emailAddress,
                   controller: usernameController,
                   decoration: InputDecoration(hintText: "Username"),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+              SizedBox(
+                height: 25,
+              ),
+              SizedBox(
+                width: (MediaQuery.of(context).size.width / 6) * 5,
+                child: TextField(
+                  keyboardType: TextInputType.emailAddress,
+                  controller: emailController,
+                  decoration: InputDecoration(hintText: "Email"),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
@@ -58,6 +69,28 @@ class _RegisterScreensState extends State<RegisterScreen> {
                     required int? maxLength,
                     required bool isFocused,
                   }) {
+                    return Text(
+                      '$currentLength Karakter',
+                    );
+                  },
+                ),
+              ),
+              SizedBox(
+                height: 25,
+              ),
+              SizedBox(
+                width: (MediaQuery.of(context).size.width / 6) * 5,
+                child: TextField(
+                  controller: confirmPasswordController,
+                  obscureText: true,
+                  decoration: InputDecoration(hintText: "Konfirmasi Password"),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  buildCounter: (
+                      BuildContext context, {
+                        required int currentLength,
+                        required int? maxLength,
+                        required bool isFocused,
+                      }) {
                     return Text(
                       '$currentLength Karakter',
                     );

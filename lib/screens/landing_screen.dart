@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
-class LandingScreens extends StatelessWidget {
-  const LandingScreens({Key? key}) : super(key: key);
+class LandingScreen extends StatelessWidget {
+  const LandingScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
