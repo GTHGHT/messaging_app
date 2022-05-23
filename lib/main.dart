@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'screens/main_screen.dart';
 import 'screens/register_screen.dart';
-import 'services/account.dart';
+import 'services/auth_access.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

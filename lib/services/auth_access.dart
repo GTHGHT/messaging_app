@@ -48,8 +48,10 @@ class AuthAccess extends ChangeNotifier {
       isLoggedIn = true;
       await _firestore.collection("users").doc(newUser.user!.uid).set({
         "image": "https://firebasestorage.googleapis.com/v0/b/kongko-ee34d.appspot.com/o/default_profile.png?alt=media&token=b11b4779-be0e-4de4-b501-c32fe3e9b4c9",
-        "username": username.text,
+        "name": username.text,
         "email": email.text,
+        "groups": {},
+        "personalChats": {},
       });
       showSnackBar("Berhasil Registrasi");
       return true;
@@ -69,8 +71,7 @@ class AuthAccess extends ChangeNotifier {
     }
   }
 
-  Future<bool> login(
-    BuildContext context, {
+  Future<bool> login({
     required TextEditingController email,
     required TextEditingController password,
     required void Function(String message) showSnackBar,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../services/account.dart';
+import '../services/auth_access.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -115,7 +115,7 @@ class _RegisterScreensState extends State<RegisterScreen> {
                           password: passwordController,
                           confirmPassword: confirmPasswordController,
                           showSnackBar: (String message) {
-                            ScaffoldMessenger.of(context).showSnackBar(
+                            ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
                               SnackBar(
                                 content: Text(message),
                               ),
@@ -123,8 +123,11 @@ class _RegisterScreensState extends State<RegisterScreen> {
                           },
                         )
                         .then(
-                          (value) =>
-                              Navigator.pushReplacementNamed(context, "/main"),
+                          (value) {
+                            if (value) {
+                              Navigator.pushReplacementNamed(context, "/main");
+                            }
+                          },
                         );
                   },
                   child: Text("Register"),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:messaging_app/services/auth_access.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreens extends StatefulWidget {
   const LoginScreens({Key? key}) : super(key: key);
@@ -8,13 +10,13 @@ class LoginScreens extends StatefulWidget {
 }
 
 class _LoginScreensState extends State<LoginScreens> {
-  TextEditingController usernameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   int passwordCounter = 0;
 
   @override
   void dispose() {
-    usernameController.dispose();
+    emailController.dispose();
     passwordController.dispose();
     super.dispose();
   }
@@ -33,8 +35,8 @@ class _LoginScreensState extends State<LoginScreens> {
                 width: (MediaQuery.of(context).size.width / 6) * 5,
                 child: TextField(
                   keyboardType: TextInputType.emailAddress,
-                  controller: usernameController,
-                  decoration: InputDecoration(hintText: "Username"),
+                  controller: emailController,
+                  decoration: InputDecoration(hintText: "Email"),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
@@ -66,7 +68,21 @@ class _LoginScreensState extends State<LoginScreens> {
               SizedBox(
                 width: MediaQuery.of(context).size.width / 2,
                 child: ElevatedButton(
-                  onPressed: null,
+                  onPressed: () {
+                    context.read<AuthAccess>().login(
+                          email: emailController,
+                          password: passwordController,
+                          showSnackBar: (String message) {
+                            ScaffoldMessenger.of(context)
+                              ..clearSnackBars()
+                              ..showSnackBar(
+                                SnackBar(
+                                  content: Text(message),
+                                ),
+                              );
+                          },
+                        );
+                  },
                   child: Text("Login"),
                 ),
               ),
