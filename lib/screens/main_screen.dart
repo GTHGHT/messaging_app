@@ -7,6 +7,26 @@ import 'package:provider/provider.dart';
 import '../services/bottom_nav_bar_provider.dart';
 
 class MainScreen extends StatelessWidget {
+  Widget? buildFloatingActionButton(BuildContext context, int index) {
+    if (index == 0) {
+      return FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).pushNamed('/create_pc');
+        },
+        child: Icon(Icons.chat),
+      );
+    } else if (index == 1) {
+      return FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).pushNamed('/create_group');
+        },
+        child: Icon(Icons.group),
+      );
+    } else {
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<Widget> _pages = [
@@ -16,6 +36,10 @@ class MainScreen extends StatelessWidget {
     ];
 
     return Scaffold(
+      floatingActionButton: buildFloatingActionButton(
+        context,
+        context.watch<BottomNavBarProvider>().currentIndex,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: context.watch<BottomNavBarProvider>().currentIndex,
         onTap: (index) =>
@@ -38,7 +62,8 @@ class MainScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: _pages.elementAt(context.watch<BottomNavBarProvider>().currentIndex),
+      body:
+          _pages.elementAt(context.watch<BottomNavBarProvider>().currentIndex),
     );
   }
 }

@@ -1,13 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:messaging_app/services/firestore_services.dart';
 
 class AuthAccess extends ChangeNotifier {
   bool loading = false;
   bool isLoggedIn = false;
   FirebaseAuth _auth = FirebaseAuth.instance;
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   void showLoading(bool value) {
     loading = value;
@@ -37,7 +36,7 @@ class AuthAccess extends ChangeNotifier {
         showSnackBar("Password tidak sama");
         throw Exception();
       }
-      final newUser = await _auth.createUserWithEmailAndPassword(
+      await _auth.createUserWithEmailAndPassword(
         email: email.text,
         password: password.text,
       );
@@ -46,13 +45,10 @@ class AuthAccess extends ChangeNotifier {
         password: password.text,
       );
       isLoggedIn = true;
-      await _firestore.collection("users").doc(newUser.user!.uid).set({
-        "image": "https://firebasestorage.googleapis.com/v0/b/kongko-ee34d.appspot.com/o/default_profile.png?alt=media&token=b11b4779-be0e-4de4-b501-c32fe3e9b4c9",
-        "name": username.text,
-        "email": email.text,
-        "groups": {},
-        "personalChats": {},
-      });
+      await FirestoreServices.addUserDoc(
+        username: username.text,
+        email: email.text,
+      );
       showSnackBar("Berhasil Registrasi");
       showLoading(false);
       return true;
