@@ -69,7 +69,9 @@ class _LoginScreensState extends State<LoginScreens> {
                 width: MediaQuery.of(context).size.width / 2,
                 child: ElevatedButton(
                   onPressed: () {
-                    context.read<AuthAccess>().login(
+                    context
+                        .read<AuthAccess>()
+                        .login(
                           email: emailController,
                           password: passwordController,
                           showSnackBar: (String message) {
@@ -81,7 +83,12 @@ class _LoginScreensState extends State<LoginScreens> {
                                 ),
                               );
                           },
-                        );
+                        )
+                        .then((value) {
+                      if (value) {
+                        Navigator.of(context).pushReplacementNamed("/main");
+                      }
+                    });
                   },
                   child: Text("Login"),
                 ),

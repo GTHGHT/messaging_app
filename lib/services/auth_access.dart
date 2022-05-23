@@ -54,6 +54,7 @@ class AuthAccess extends ChangeNotifier {
         "personalChats": {},
       });
       showSnackBar("Berhasil Registrasi");
+      showLoading(false);
       return true;
     } on FirebaseAuthException catch (e) {
       if (e.code == "email-already-in-use") {
@@ -88,7 +89,8 @@ class AuthAccess extends ChangeNotifier {
         password: password.text,
       );
       isLoggedIn = true;
-      showSnackBar("Berhasil Register");
+      showSnackBar("Berhasil Login");
+      showLoading(false);
       return true;
     } on FirebaseAuthException catch (e) {
       if (e.code == "user-not-found") {
