@@ -60,7 +60,7 @@ class LandingScreen extends StatelessWidget {
         ),
         // TODO: Ubah Title Sama Bodynya
         PageViewModel(
-          title: "Berbicara Dengan Teman",
+          title: "Mudah",
           body: "Menghubungkan Yang Jauh, Memutuskan Yang Dekat.",
           image: Theme.of(context).brightness == Brightness.light
               ? Image.asset("images/landing_one.png")
@@ -69,7 +69,7 @@ class LandingScreen extends StatelessWidget {
         ),
         // TODO: Ubah Title Sama Bodynya
         PageViewModel(
-          title: "Berbicara Dengan Teman",
+          title: "Dekat",
           body: "Menghubungkan Yang Jauh, Memutuskan Yang Dekat.",
           image: Theme.of(context).brightness == Brightness.light
               ? Image.asset("images/landing_two.png")
@@ -78,7 +78,7 @@ class LandingScreen extends StatelessWidget {
         ),
         // TODO: Ubah Title Sama Bodynya
         PageViewModel(
-          title: "Berbicara Dengan Teman",
+          title: "Cepat",
           body: "Menghubungkan Yang Jauh, Memutuskan Yang Dekat.",
           image: Theme.of(context).brightness == Brightness.light
               ? Image.asset("images/landing_three.png")
