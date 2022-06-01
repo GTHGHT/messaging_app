@@ -5,7 +5,6 @@ import 'package:messaging_app/services/firestore_services.dart';
 
 class AuthAccess extends ChangeNotifier {
   bool loading = false;
-  bool isLoggedIn = false;
   FirebaseAuth _auth = FirebaseAuth.instance;
 
   void showLoading(bool value) {
@@ -44,7 +43,6 @@ class AuthAccess extends ChangeNotifier {
         email: email.text,
         password: password.text,
       );
-      isLoggedIn = true;
       await FirestoreServices.addUserDoc(
         username: username.text,
         email: email.text,
@@ -84,7 +82,6 @@ class AuthAccess extends ChangeNotifier {
         email: email.text,
         password: password.text,
       );
-      isLoggedIn = true;
       showSnackBar("Berhasil Login");
       showLoading(false);
       return true;
@@ -106,7 +103,6 @@ class AuthAccess extends ChangeNotifier {
 
   void logout() {
     _auth.signOut();
-    isLoggedIn = false;
     notifyListeners();
   }
 }

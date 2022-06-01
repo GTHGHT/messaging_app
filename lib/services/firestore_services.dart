@@ -8,9 +8,9 @@ class FirestoreServices{
   static final _storage = FirebaseStorage.instance;
 
   static Future<void> addUserDoc({required String email, required String username}) async {
-    if(_auth.currentUser != null){
-      final user = _auth.currentUser;
-      await user!.updateDisplayName(username);
+    final user = _auth.currentUser;
+    if(user != null){
+      await user.updateDisplayName(username);
       await user.updatePhotoURL(_storage.ref('default_profile.png').fullPath);
       final userRef =  _firestore.collection('users').doc(user.uid);
       await userRef.set({
@@ -22,14 +22,36 @@ class FirestoreServices{
     }
   }
 
+  static Future<void> changeUserName({required String name}) async{
+
+  }
+
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getUserGroups(){
+    final user = _auth.currentUser;
+    if(user != null){
+      return  _firestore.collection("users").doc(user.uid).collection("groups").snapshots();
+    } else{
+      throw Exception("Gagal Menerima Daftar Group");
+    }
+  }
+
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getUserPersonalChats(){
+    final user = _auth.currentUser;
+    if(user != null){
+      return  _firestore.collection("users").doc(user.uid).collection("personalChats").snapshots();
+    } else{
+      throw Exception("Gagal Menerima Daftar Group");
+    }
+  }
+
   static Future<bool> createGroup({
     required String groupId,
     required String groupName,
     String? groupImage,
     required String groupDesc,
   }) async {
-    if(_auth.currentUser != null){
-      final user = _auth.currentUser;
+    final user = _auth.currentUser;
+    if(user != null){
       final groupRef = _firestore.collection('groups').doc(groupId);
       await groupRef.get().then((value) async{
         if(value.exists){
@@ -39,13 +61,19 @@ class FirestoreServices{
             'id': groupId,
             'type': 1,
             'title': groupName,
-            'image': groupImage ?? _storage.ref("default_group.png").fullPath,
+            'image': groupImage,
+            'desc': groupDesc,
           });
-          await groupRef.collection('members').doc(user!.uid).set({
+          await groupRef.collection('members').doc(user.uid).set({
             'uid': user.uid,
-            'username': user.displayName,
+            'name': user.displayName,
             'image': user.photoURL,
             'email': user.email,
+          });
+          await _firestore.collection("users").doc(user.uid).collection("groups").doc(groupId).set({
+            'id':groupId,
+            'title': groupName,
+            'image': groupImage,
           });
           return true;
         }

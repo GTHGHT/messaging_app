@@ -14,8 +14,6 @@ class PersonalChatsPage extends StatelessWidget {
         return ChatsListTile(
           image: NetworkImage(defaultImage),
           title: "Personal Chat $index",
-          lastMessage: 'Ini Message Terakhir Dari Chat',
-          sentTime: "12.0$index",
         );
       },
       separatorBuilder: (_, __) => Divider(),

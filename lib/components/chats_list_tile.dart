@@ -2,19 +2,21 @@
 import 'package:flutter/material.dart';
 
 class ChatsListTile extends StatelessWidget {
+
+  // TODO: Hapus Comment
   const ChatsListTile({
     Key? key,
     required this.image,
     required this.title,
-    required this.lastMessage,
-    required this.sentTime,
+    // required this.lastMessage,
+    // required this.sentTime,
     this.onTap
   }) : super(key: key);
 
   final ImageProvider image;
   final String title;
-  final String lastMessage;
-  final String sentTime;
+  // final String lastMessage;
+  // final String sentTime;
   final VoidCallback? onTap;
 
   @override
@@ -31,14 +33,14 @@ class ChatsListTile extends StatelessWidget {
         title,
         style: Theme.of(context).textTheme.bodyLarge,
       ),
-      subtitle: Text(
-        lastMessage,
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
-      trailing: Text(
-        sentTime,
-        style: Theme.of(context).textTheme.bodySmall,
-      ),
+      // subtitle: Text(
+      //   lastMessage,
+      //   style: Theme.of(context).textTheme.bodyMedium,
+      // ),
+      // trailing: Text(
+      //   sentTime,
+      //   style: Theme.of(context).textTheme.bodySmall,
+      // ),
       onTap: onTap,
     );
   }
