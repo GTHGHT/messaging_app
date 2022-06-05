@@ -3,9 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:messaging_app/services/firestore_services.dart';
 
-class AuthAccess extends ChangeNotifier {
+class AccessServices extends ChangeNotifier {
   bool loading = false;
-  FirebaseAuth _auth = FirebaseAuth.instance;
+  final _auth = FirebaseAuth.instance;
+  String _uid = "";
+
+  String get uid => _uid;
 
   void showLoading(bool value) {
     loading = value;
@@ -47,6 +50,7 @@ class AuthAccess extends ChangeNotifier {
         username: username.text,
         email: email.text,
       );
+      _uid = _auth.currentUser!.uid;
       showSnackBar("Berhasil Registrasi");
       showLoading(false);
       return true;
@@ -82,6 +86,7 @@ class AuthAccess extends ChangeNotifier {
         email: email.text,
         password: password.text,
       );
+      _uid = _auth.currentUser!.uid;
       showSnackBar("Berhasil Login");
       showLoading(false);
       return true;

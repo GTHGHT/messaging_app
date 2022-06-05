@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:messaging_app/services/auth_access.dart';
+import 'package:messaging_app/services/access_services.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreens extends StatefulWidget {
@@ -36,11 +36,11 @@ class _LoginScreensState extends State<LoginScreens> {
                 child: TextField(
                   keyboardType: TextInputType.emailAddress,
                   controller: emailController,
-                  decoration: InputDecoration(hintText: "Email"),
+                  decoration: const InputDecoration(hintText: "Email"),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 25,
               ),
               SizedBox(
@@ -48,7 +48,7 @@ class _LoginScreensState extends State<LoginScreens> {
                 child: TextField(
                   controller: passwordController,
                   obscureText: true,
-                  decoration: InputDecoration(hintText: "Password"),
+                  decoration: const InputDecoration(hintText: "Password"),
                   style: Theme.of(context).textTheme.bodyMedium,
                   buildCounter: (
                     BuildContext context, {
@@ -62,7 +62,7 @@ class _LoginScreensState extends State<LoginScreens> {
                   },
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 50,
               ),
               SizedBox(
@@ -70,7 +70,7 @@ class _LoginScreensState extends State<LoginScreens> {
                 child: ElevatedButton(
                   onPressed: () {
                     context
-                        .read<AuthAccess>()
+                        .read<AccessServices>()
                         .login(
                           email: emailController,
                           password: passwordController,
@@ -90,10 +90,10 @@ class _LoginScreensState extends State<LoginScreens> {
                       }
                     });
                   },
-                  child: Text("Login"),
+                  child: const Text("Login"),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 25,
               ),
               SizedBox(
@@ -102,7 +102,7 @@ class _LoginScreensState extends State<LoginScreens> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text("Kembali"),
+                  child: const Text("Kembali"),
                 ),
               )
             ],

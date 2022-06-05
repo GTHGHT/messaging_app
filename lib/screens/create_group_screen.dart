@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:messaging_app/services/firestore_services.dart';
+import 'package:messaging_app/utils/group_model.dart';
+import 'package:provider/provider.dart';
+
+import '../utils/group_data.dart';
 
 class CreateGroupScreen extends StatefulWidget {
   const CreateGroupScreen({Key? key}) : super(key: key);
@@ -15,6 +18,28 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final addButton = context.select<GroupData, bool>((value) => value.loading)
+        ? const CircularProgressIndicator()
+        : ElevatedButton(
+            onPressed: () async {
+              context.read<GroupData>().groupModel = GroupModel(
+                  id: groupId.text,
+                  title: groupTitle.text,
+                  image: "",
+                  desc: groupDesc.text);
+              bool success = await context.read<GroupData>().createGroup();
+              if (success) {
+                Navigator.of(context).pop();
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Buat Group Gagal"),
+                  ),
+                );
+              }
+            },
+            child: const Text("Buat Grup"),
+          );
     return Scaffold(
       appBar: AppBar(
         title: const Text("Buat Grup"),
@@ -25,50 +50,32 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
           children: [
             TextField(
               controller: groupId,
-              decoration: const InputDecoration(hintText: "Grup ID"),
+              decoration: const InputDecoration(hintText: "ID Grup"),
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-            const SizedBox(
-              height: 20,
-            ),
+            const SizedBox(height: 10,),
             TextField(
               controller: groupTitle,
               decoration: const InputDecoration(hintText: "Judul Grup"),
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-            const SizedBox(
-              height: 20,
-            ),
+            const SizedBox(height: 10,),
             TextField(
               controller: groupDesc,
               minLines: 3,
               maxLines: 6,
               decoration: const InputDecoration(
                 hintText: "Deskripsi Grup",
-                contentPadding: const EdgeInsets.all(10),
+                contentPadding: EdgeInsets.all(10),
               ),
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(
               height: 20,
             ),
-            ElevatedButton(
-              onPressed: () async {
-                bool success = await FirestoreServices.createGroup(
-                    groupId: groupId.text,
-                    groupName: groupTitle.text,
-                    groupDesc: groupDesc.text);
-                if (success) {
-                  Navigator.of(context).pop();
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Buat Group Gagal"),
-                    ),
-                  );
-                }
-              },
-              child: const Text("Buat Grup"),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 500),
+              child: addButton,
             ),
           ],
         ),

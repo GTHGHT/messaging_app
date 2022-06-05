@@ -1,15 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:messaging_app/services/firestore_services.dart';
+import 'package:messaging_app/utils/chat_data.dart';
+import 'package:messaging_app/utils/group_model.dart';
+import 'package:provider/provider.dart';
 
 import '../components/chats_list_tile.dart';
 
 class GroupsPage extends StatelessWidget {
+  const GroupsPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    // TODO: Hapus Line Di Bawah
-    const defaultImage =  NetworkImage(
-        "https://firebasestorage.googleapis.com/v0/b/kongko-ee34d.appspot.com/o/default_profile.png?alt=media&token=b11b4779-be0e-4de4-b501-c32fe3e9b4c9");
+    const defaultImage = "default_group.png";
 
     return StreamBuilder<QuerySnapshot>(
       stream: FirestoreServices.getUserGroups(),
@@ -18,7 +21,9 @@ class GroupsPage extends StatelessWidget {
           child: Text("Grup Kosong, Silahkan Join atau Buat Grup"),
         );
         if (!(snapshot.hasData)) {
-          return defaultEmptyReturn;
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
         }
         final groups = snapshot.data!.docs.toList();
         if (groups.isEmpty) {
@@ -29,27 +34,18 @@ class GroupsPage extends StatelessWidget {
           itemBuilder: (context, index) {
             final groupData = groups[index].data() as Map<String, dynamic>;
             return ChatsListTile(
-              image: groupData['image'] ?? defaultImage,
+              imagePath: groupData['image'] ?? defaultImage,
               title: groupData['title'],
-              onTap: () {},
+              onTap: () {
+                context.read<ChatData>().groupModel =
+                    GroupModel.fromMap(groupData);
+                Navigator.of(context).pushNamed("/chat");
+              },
             );
           },
           itemCount: groups.length,
         );
       },
     );
-
-    // return ListView.separated(
-    //   itemBuilder: (context, index) {
-    //     return ChatsListTile(
-    //       image: NetworkImage(defaultImage),
-    //       title: "Group $index",
-    //       lastMessage: 'Ini Message Terakhir Dari Group',
-    //       sentTime: "12.0$index",
-    //     );
-    //   },
-    //   separatorBuilder: (_, __) => Divider(),
-    //   itemCount: 5,
-    // );
   }
 }

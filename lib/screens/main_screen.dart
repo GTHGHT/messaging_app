@@ -4,23 +4,52 @@ import 'package:messaging_app/screens/personal_chats_page.dart';
 import 'package:messaging_app/screens/settings_page.dart';
 import 'package:provider/provider.dart';
 
-import '../services/bottom_nav_bar_provider.dart';
+import '../utils/bottom_nav_bar_data.dart';
 
 class MainScreen extends StatelessWidget {
-  Widget? buildFloatingActionButton(BuildContext context, int index) {
+  const MainScreen({Key? key}) : super(key: key);
+
+  PreferredSizeWidget? buildAppBar(BuildContext context, int index) {
     if (index == 0) {
-      return FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).pushNamed('/create_pc');
-        },
-        child: Icon(Icons.chat),
+      return AppBar(
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        title: const Text("Personal Chat"),
+        actions: [
+          Tooltip(
+            message: "Buat Personal Chat",
+            child: IconButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/create_pc');
+              },
+              icon: const Icon(Icons.add),
+            ),
+          ),
+        ],
       );
     } else if (index == 1) {
-      return FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).pushNamed('/create_group');
-        },
-        child: Icon(Icons.group),
+      return AppBar(
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        title: const Text("Group"),
+        actions: [
+          Tooltip(
+            message: "Buat Grup",
+            child: IconButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/create_group');
+              },
+              icon: const Icon(Icons.add),
+            ),
+          ),
+          Tooltip(message: "Gabung Grup",
+          child: IconButton(
+            onPressed: (){
+              Navigator.of(context).pushNamed('/join_group');
+            },
+            icon: const Icon(Icons.group),
+          ),)
+        ],
       );
     } else {
       return null;
@@ -30,20 +59,17 @@ class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Widget> _pages = [
-      PersonalChatsPage(),
-      GroupsPage(),
-      SettingsPage()
+      const PersonalChatsPage(),
+      const GroupsPage(),
+      const SettingsPage()
     ];
 
     return Scaffold(
-      floatingActionButton: buildFloatingActionButton(
-        context,
-        context.watch<BottomNavBarProvider>().currentIndex,
-      ),
+      appBar:
+          buildAppBar(context, context.watch<BottomNavBarData>().currentIndex),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: context.watch<BottomNavBarProvider>().currentIndex,
-        onTap: (index) =>
-            context.read<BottomNavBarProvider>().currentIndex = index,
+        currentIndex: context.watch<BottomNavBarData>().currentIndex,
+        onTap: (index) => context.read<BottomNavBarData>().currentIndex = index,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle_outlined),
@@ -62,8 +88,7 @@ class MainScreen extends StatelessWidget {
           ),
         ],
       ),
-      body:
-          _pages.elementAt(context.watch<BottomNavBarProvider>().currentIndex),
+      body: _pages.elementAt(context.watch<BottomNavBarData>().currentIndex),
     );
   }
 }

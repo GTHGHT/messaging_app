@@ -2,16 +2,20 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:messaging_app/screens/access_screen.dart';
 import 'package:messaging_app/screens/create_group_screen.dart';
+import 'package:messaging_app/screens/create_personal_chat.dart';
+import 'package:messaging_app/screens/join_group_screen.dart';
 import 'package:messaging_app/screens/landing_screen.dart';
 import 'package:messaging_app/screens/login_screen.dart';
-import 'package:messaging_app/services/bottom_nav_bar_provider.dart';
+import 'package:messaging_app/utils/bottom_nav_bar_data.dart';
+import 'package:messaging_app/utils/chat_data.dart';
+import 'package:messaging_app/utils/group_data.dart';
 import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
 import 'screens/chat_screen.dart';
 import 'screens/main_screen.dart';
 import 'screens/register_screen.dart';
-import 'services/auth_access.dart';
+import 'services/access_services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,11 +57,17 @@ class Kongko extends StatelessWidget {
 
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<AuthAccess>(
-          create: (_) => AuthAccess(),
+        ChangeNotifierProvider<GroupData>(
+          create: (_) => GroupData(),
         ),
-        ChangeNotifierProvider<BottomNavBarProvider>(
-          create: (_) => BottomNavBarProvider(),
+        ChangeNotifierProvider<AccessServices>(
+          create: (_) => AccessServices(),
+        ),
+        ChangeNotifierProvider<BottomNavBarData>(
+          create: (_) => BottomNavBarData(),
+        ),
+        ChangeNotifierProvider<ChatData>(
+          create: (_) => ChatData(),
         ),
       ],
       child: MaterialApp(
@@ -79,7 +89,7 @@ class Kongko extends StatelessWidget {
             bodyColor: const Color(0xff2b2b2b),
             displayColor: const Color(0xff2b2b2b),
           ),
-          listTileTheme: ListTileThemeData(
+          listTileTheme: const ListTileThemeData(
             style: ListTileStyle.list,
             textColor: Color(0xff2b2b2b),
           ),
@@ -136,9 +146,11 @@ class Kongko extends StatelessWidget {
           "/access": (_) => const AccessScreen(),
           "/login": (_) => const LoginScreens(),
           "/register": (_) => const RegisterScreen(),
-          "/main": (_) => MainScreen(),
-          "/chat": (_) => ChatScreen(),
-          "/create_group": (_)=>CreateGroupScreen(),
+          "/main": (_) => const MainScreen(),
+          "/chat": (_) => const ChatScreen(),
+          "/create_group": (_) => const CreateGroupScreen(),
+          "/join_group": (_) => const JoinGroupScreen(),
+          "/create_pc": (_) => const CreatePersonalChatScreen(),
         },
         initialRoute: "/",
       ),

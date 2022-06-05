@@ -3,20 +3,20 @@ import 'package:flutter/material.dart';
 import '../components/chats_list_tile.dart';
 
 class PersonalChatsPage extends StatelessWidget {
+  const PersonalChatsPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    // TODO: Hapus Line Di Bawah
-    final defaultImage =
-        "https://firebasestorage.googleapis.com/v0/b/kongko-ee34d.appspot.com/o/default_profile.png?alt=media&token=b11b4779-be0e-4de4-b501-c32fe3e9b4c9";
-
+    const defaultImage = "default_profile.png";
     return ListView.separated(
       itemBuilder: (context, index) {
         return ChatsListTile(
-          image: NetworkImage(defaultImage),
+          imagePath: defaultImage,
           title: "Personal Chat $index",
+          onTap: () {},
         );
       },
-      separatorBuilder: (_, __) => Divider(),
+      separatorBuilder: (_, __) => const Divider(),
       itemCount: 5,
     );
   }
