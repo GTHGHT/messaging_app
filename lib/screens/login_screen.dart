@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:messaging_app/services/access_services.dart';
+import 'package:messaging_app/utils/chat_data.dart';
+import 'package:messaging_app/utils/group_data.dart';
+import 'package:messaging_app/utils/personal_chat_data.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreens extends StatefulWidget {
@@ -23,6 +26,40 @@ class _LoginScreensState extends State<LoginScreens> {
 
   @override
   Widget build(BuildContext context) {
+    final loginButton = context.watch<AccessServices>().loading
+        ? const CircularProgressIndicator()
+        : SizedBox(
+            width: MediaQuery.of(context).size.width / 2,
+            child: ElevatedButton(
+              onPressed: () {
+                context
+                    .read<AccessServices>()
+                    .login(
+                      email: emailController,
+                      password: passwordController,
+                      showSnackBar: (String message) {
+                        ScaffoldMessenger.of(context)
+                          ..clearSnackBars()
+                          ..showSnackBar(
+                            SnackBar(
+                              content: Text(message),
+                            ),
+                          );
+                      },
+                    )
+                    .then((value) {
+                  if (value) {
+                    context.read<GroupData>().loadUser();
+                    context.read<PersonalChatData>().loadUser();
+                    context.read<ChatData>().loadUser();
+                    Navigator.of(context).pushReplacementNamed("/main");
+                  }
+                });
+              },
+              child: const Text("Login"),
+            ),
+          );
+
     // TODO: Desain Ulang Bagian Login
     return Scaffold(
       body: SafeArea(
@@ -65,33 +102,9 @@ class _LoginScreensState extends State<LoginScreens> {
               const SizedBox(
                 height: 50,
               ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width / 2,
-                child: ElevatedButton(
-                  onPressed: () {
-                    context
-                        .read<AccessServices>()
-                        .login(
-                          email: emailController,
-                          password: passwordController,
-                          showSnackBar: (String message) {
-                            ScaffoldMessenger.of(context)
-                              ..clearSnackBars()
-                              ..showSnackBar(
-                                SnackBar(
-                                  content: Text(message),
-                                ),
-                              );
-                          },
-                        )
-                        .then((value) {
-                      if (value) {
-                        Navigator.of(context).pushReplacementNamed("/main");
-                      }
-                    });
-                  },
-                  child: const Text("Login"),
-                ),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 500),
+                child: loginButton,
               ),
               const SizedBox(
                 height: 25,

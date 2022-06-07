@@ -3,9 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:messaging_app/services/api.dart';
 import 'package:messaging_app/utils/group_model.dart';
+import 'package:messaging_app/utils/member_model.dart';
 
 class ChatData extends ChangeNotifier {
   GroupModel _groupModel = GroupModel.initial();
+  MemberModel _currentUserModel = MemberModel.initial();
   String _messageText = "";
   bool loading = false;
 
@@ -17,7 +19,7 @@ class ChatData extends ChangeNotifier {
     notifyListeners();
     await api.addDocument({
       'text': _messageText,
-      'sender': _auth.currentUser!.displayName,
+      'sender': _currentUserModel.username,
       'sender_uid': _auth.currentUser!.uid,
       'sent_time': FieldValue.serverTimestamp(),
     });
@@ -38,6 +40,7 @@ class ChatData extends ChangeNotifier {
     }
     _groupModel = value;
     api.collection = "groups/${value.id}/messages";
+
     notifyListeners();
   }
 
@@ -48,6 +51,18 @@ class ChatData extends ChangeNotifier {
   String get image => _groupModel.image;
 
   String get messageText => _messageText;
+
+  loadUser() async{
+    final user = _auth.currentUser;
+    if (user != null) {
+      final _currentUserDoc = await Api(collection: "users", docId: user.uid).getDocument();
+      _currentUserModel = MemberModel.fromMap(_currentUserDoc.data() as Map<String, dynamic>);
+      api.collection = "users/${user.uid}/groups";
+      notifyListeners();
+    } else {
+      throw Exception("Gagal Menerima Daftar Group");
+    }
+  }
 
   set messageText(String value) {
     _messageText = value;

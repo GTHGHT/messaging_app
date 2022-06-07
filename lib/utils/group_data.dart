@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:messaging_app/services/api.dart';
 import 'package:messaging_app/utils/group_model.dart';
+import 'package:messaging_app/utils/member_model.dart';
 
 class GroupData extends ChangeNotifier {
   GroupModel _groupModel = GroupModel.initial();
@@ -31,6 +32,16 @@ class GroupData extends ChangeNotifier {
     notifyListeners();
   }
 
+  void markAsLoading(){
+    loading = true;
+    notifyListeners();
+  }
+
+  void loadUser(){
+    _userApi.collection = "users/${_auth.currentUser!.uid}/groups";
+    notifyListeners();
+  }
+
   Stream<QuerySnapshot<Map<String, dynamic>>> getUserGroups() {
     final user = _auth.currentUser;
     if (user != null) {
@@ -41,8 +52,7 @@ class GroupData extends ChangeNotifier {
   }
 
   Future<bool> createGroup() async {
-    loading = true;
-    notifyListeners();
+    markAsLoading();
     final user = _auth.currentUser;
     if (user != null) {
       final group = await _groupApi.getDocument();
@@ -52,15 +62,12 @@ class GroupData extends ChangeNotifier {
         return false;
       } else {
         await _groupApi.setDocument(groupModel.toMap());
+        final _userDoc = await Api(collection: 'users', docId: user.uid).getDocument();
+        final _userModel = MemberModel.fromMap(_userDoc.data() ?? {});
         await Api(
           collection: "groups/${_groupModel.id}/members",
           docId: user.uid,
-        ).setDocument({
-          'uid': user.uid,
-          'name': user.displayName,
-          'image': user.photoURL,
-          'email': user.email,
-        });
+        ).setDocument(_userModel.toMapShort());
         await _userApi.setDocument(groupModel.toMapShort());
         loading = false;
         notifyListeners();
@@ -74,8 +81,7 @@ class GroupData extends ChangeNotifier {
   }
 
   Future<DocumentSnapshot<Map<String, dynamic>>> getGroupInfo() async {
-    loading = true;
-    notifyListeners();
+    markAsLoading();
     final user = _auth.currentUser;
     if (user != null) {
       var doc = await _groupApi.getDocument();
@@ -85,11 +91,12 @@ class GroupData extends ChangeNotifier {
     } else {
       loading = false;
       notifyListeners();
-      throw Exception("Grup Tidak Ditemukan");
+      throw Exception("Anda Belum Login");
     }
   }
 
   Future<void> joinGroup() async {
+    markAsLoading();
     final user = _auth.currentUser;
     if (user != null) {
       final doc = await _userApi.getDocument();
@@ -97,13 +104,12 @@ class GroupData extends ChangeNotifier {
         throw Exception("Sudah Join Grup Tersebut");
       }
       await _userApi.setDocument(groupModel.toMapShort());
+      final _userDoc = await Api(collection: 'groups', docId: user.uid).getDocument();
+      final _userModel = MemberModel.fromMap(_userDoc.data() ?? {});
       await Api(collection: "groups/${groupModel.id}/members", docId: user.uid)
-          .setDocument({
-        'uid': user.uid,
-        'name': user.displayName,
-        'image': user.photoURL,
-        'email': user.email,
-      });
+          .setDocument(_userModel.toMapShort());
     }
+    loading = false;
+    notifyListeners();
   }
 }

@@ -16,6 +16,7 @@ import 'screens/chat_screen.dart';
 import 'screens/main_screen.dart';
 import 'screens/register_screen.dart';
 import 'services/access_services.dart';
+import 'utils/personal_chat_data.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +36,11 @@ class Kongko extends StatelessWidget {
         fontFamily: "Philosopher",
         fontWeight: FontWeight.w500,
         fontSize: 22,
+      ),
+      titleMedium: TextStyle(
+        fontFamily: "Mulish",
+        fontWeight: FontWeight.w500,
+        fontSize: 18,
       ),
       bodyLarge: TextStyle(
         fontFamily: "Mulish",
@@ -68,6 +74,9 @@ class Kongko extends StatelessWidget {
         ),
         ChangeNotifierProvider<ChatData>(
           create: (_) => ChatData(),
+        ),
+        ChangeNotifierProvider<PersonalChatData>(
+          create: (_) => PersonalChatData(),
         ),
       ],
       child: MaterialApp(

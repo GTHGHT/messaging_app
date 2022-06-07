@@ -18,6 +18,10 @@ class Api {
       }
   }
 
+  Future<QuerySnapshot<Map<String, dynamic>>> searchDocument(String field, Object value){
+    return _firestore.collection(collection).where(field,isEqualTo: value).limit(1).get();
+  }
+
   Future<DocumentSnapshot<Map<String, dynamic>>> getDocument(){
     return _firestore.collection(collection).doc(docId).get();
   }

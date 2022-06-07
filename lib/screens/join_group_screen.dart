@@ -27,6 +27,16 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
     super.dispose();
   }
 
+  showSnackBar(String value) {
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(value),
+        ),
+      );
+  }
+
   @override
   Widget build(BuildContext context) {
     final searchButton =
@@ -35,19 +45,23 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
             : ElevatedButton(
                 onPressed: () async {
                   try {
-                    context.read<GroupData>().groupId = controller.text;
-                    final groupInfo =
-                        await context.read<GroupData>().getGroupInfo();
-                    context.read<GroupData>().groupModel =
-                        GroupModel.fromMap(groupInfo.data()!);
+                    if(controller.text.isNotEmpty) {
+                      context
+                          .read<GroupData>()
+                          .groupId = controller.text;
+                      final groupInfo =
+                      await context.read<GroupData>().getGroupInfo();
+                      if (groupInfo.exists) {
+                        context
+                            .read<GroupData>()
+                            .groupModel =
+                            GroupModel.fromMap(groupInfo.data()!);
+                        return;
+                      }
+                    }
+                    showSnackBar("${controller.text} Tidak Ditemukan");
                   } catch (e) {
-                    ScaffoldMessenger.of(context)
-                      ..clearSnackBars()
-                      ..showSnackBar(
-                        SnackBar(
-                          content: Text(e.toString()),
-                        ),
-                      );
+                    showSnackBar(e.toString());
                   }
                 },
                 child: const Text("Cari Grup"),
@@ -65,13 +79,7 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
                 await context.read<GroupData>().joinGroup();
                 Navigator.of(context).pop();
               } catch (e) {
-                ScaffoldMessenger.of(context)
-                  ..clearSnackBars()
-                  ..showSnackBar(
-                    SnackBar(
-                      content: Text(e.toString()),
-                    ),
-                  );
+                showSnackBar(e.toString());
               }
             },
           );
@@ -81,19 +89,23 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
         title: const Text("Join Grup"),
       ),
       body: Padding(
-        padding:const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             TextField(
               controller: controller,
               decoration: const InputDecoration(labelText: "ID Grup"),
             ),
-            const SizedBox(height: 10,),
+            const SizedBox(
+              height: 10,
+            ),
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 500),
               child: searchButton,
             ),
-            const SizedBox(height: 20,),
+            const SizedBox(
+              height: 20,
+            ),
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 500),
               child: searchResult,

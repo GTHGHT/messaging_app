@@ -31,11 +31,12 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
               if (success) {
                 Navigator.of(context).pop();
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Buat Group Gagal"),
-                  ),
-                );
+                ScaffoldMessenger.of(context)..clearSnackBars()
+                  ..showSnackBar(
+                    const SnackBar(
+                      content: Text("Buat Group Gagal"),
+                    ),
+                  );
               }
             },
             child: const Text("Buat Grup"),
@@ -51,15 +52,17 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
             TextField(
               controller: groupId,
               decoration: const InputDecoration(hintText: "ID Grup"),
-              style: Theme.of(context).textTheme.bodyMedium,
             ),
-            const SizedBox(height: 10,),
+            const SizedBox(
+              height: 10,
+            ),
             TextField(
               controller: groupTitle,
               decoration: const InputDecoration(hintText: "Judul Grup"),
-              style: Theme.of(context).textTheme.bodyMedium,
             ),
-            const SizedBox(height: 10,),
+            const SizedBox(
+              height: 10,
+            ),
             TextField(
               controller: groupDesc,
               minLines: 3,
@@ -68,7 +71,6 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                 hintText: "Deskripsi Grup",
                 contentPadding: EdgeInsets.all(10),
               ),
-              style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(
               height: 20,

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:messaging_app/services/firestore_services.dart';
 import 'package:messaging_app/utils/chat_data.dart';
+import 'package:messaging_app/utils/group_data.dart';
 import 'package:messaging_app/utils/group_model.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +15,7 @@ class GroupsPage extends StatelessWidget {
     const defaultImage = "default_group.png";
 
     return StreamBuilder<QuerySnapshot>(
-      stream: FirestoreServices.getUserGroups(),
+      stream: context.watch<GroupData>().getUserGroups(),
       builder: (context, snapshot) {
         Widget defaultEmptyReturn = const Center(
           child: Text("Grup Kosong, Silahkan Join atau Buat Grup"),

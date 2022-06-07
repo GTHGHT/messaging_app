@@ -1,29 +1,46 @@
 class MemberModel{
-  final String id;
-  final String name;
+  final String uid;
+  final String username;
   final String image;
   final String email;
 
   MemberModel({
-    required this.id,
-    required this.name,
+    required this.uid,
+    required this.username,
     required this.image,
     required this.email,
   });
 
   factory MemberModel.fromMap(Map<String, dynamic> data){
     return MemberModel(
-      id: data['id'],
-      name: data['name'],
+      uid: data['uid'],
+      username: data['username'],
       image: data['image'],
       email: data['email'],
     );
   }
 
+  Map<String, dynamic> toMap(){
+    return {
+      'uid': uid,
+      'username': username,
+      'image': image,
+      'email': email,
+    };
+  }
+
+  Map<String, dynamic> toMapShort(){
+    return {
+      'uid': uid,
+      'username': username,
+      'image': image,
+    };
+  }
+
   factory MemberModel.initial() {
     return MemberModel(
-      id: '',
-      name: '',
+      uid: '',
+      username: '',
       image: '',
       email: '',
     );
