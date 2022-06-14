@@ -34,7 +34,7 @@ class ChatData extends ChangeNotifier {
 
   GroupModel get groupModel => _groupModel;
 
-  set groupModel (GroupModel value){
+  set groupModel(GroupModel value) {
     if (_groupModel.id != value.id) {
       _messageText = "";
     }
@@ -52,16 +52,12 @@ class ChatData extends ChangeNotifier {
 
   String get messageText => _messageText;
 
-  loadUser() async{
-    final user = _auth.currentUser;
-    if (user != null) {
-      final _currentUserDoc = await Api(collection: "users", docId: user.uid).getDocument();
-      _currentUserModel = MemberModel.fromMap(_currentUserDoc.data() as Map<String, dynamic>);
-      api.collection = "users/${user.uid}/groups";
-      notifyListeners();
-    } else {
-      throw Exception("Gagal Menerima Daftar Group");
-    }
+  loadUser() async {
+    final _currentUserDoc =
+        await Api(collection: "users", docId: _auth.currentUser!.uid)
+            .getDocument();
+    _currentUserModel =
+        MemberModel.fromMap(_currentUserDoc.data() as Map<String, dynamic>);
   }
 
   set messageText(String value) {

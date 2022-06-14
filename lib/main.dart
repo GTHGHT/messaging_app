@@ -5,6 +5,7 @@ import 'package:messaging_app/screens/create_group_screen.dart';
 import 'package:messaging_app/screens/create_personal_chat.dart';
 import 'package:messaging_app/screens/join_group_screen.dart';
 import 'package:messaging_app/screens/landing_screen.dart';
+import 'package:messaging_app/screens/load_user_screen.dart';
 import 'package:messaging_app/screens/login_screen.dart';
 import 'package:messaging_app/utils/bottom_nav_bar_data.dart';
 import 'package:messaging_app/utils/chat_data.dart';
@@ -151,7 +152,8 @@ class Kongko extends StatelessWidget {
           ),
         ),
         routes: {
-          "/": (_) => const LandingScreen(),
+          "/": (_) => const LoadUserScreen(),
+          "/landing": (_) => const LandingScreen(),
           "/access": (_) => const AccessScreen(),
           "/login": (_) => const LoginScreens(),
           "/register": (_) => const RegisterScreen(),

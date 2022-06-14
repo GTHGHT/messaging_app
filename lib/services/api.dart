@@ -26,9 +26,17 @@ class Api {
     return _firestore.collection(collection).doc(docId).get();
   }
 
-  Future<DocumentReference> addDocument(Map<String, dynamic> data) {
-    return _firestore.collection(collection).add(data);
+  Future<DocumentReference?> addDocument(Map<String, dynamic> data) {
+      return _firestore.collection(collection).add(data);
   }
+
+  Future<String> addDocumentWithId(Map<String, dynamic> data) async {
+    final docRef = _firestore.collection(collection).doc();
+    data['id'] = docRef.id;
+    await docRef.set(data);
+    return docRef.id;
+  }
+
   Future<void> setDocument(Map<String, dynamic> data) {
     return _firestore.collection(collection).doc(docId).set(data) ;
   }

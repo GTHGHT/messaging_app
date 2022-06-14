@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:messaging_app/screens/groups_page.dart';
 import 'package:messaging_app/screens/personal_chats_page.dart';
 import 'package:messaging_app/screens/settings_page.dart';
+import 'package:messaging_app/utils/personal_chat_data.dart';
 import 'package:provider/provider.dart';
 
 import '../utils/bottom_nav_bar_data.dart';
+import '../utils/group_data.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -20,6 +22,7 @@ class MainScreen extends StatelessWidget {
             message: "Buat Personal Chat",
             child: IconButton(
               onPressed: () {
+                context.read<PersonalChatData>().clearModel();
                 Navigator.of(context).pushNamed('/create_pc');
               },
               icon: const Icon(Icons.add),
@@ -45,6 +48,7 @@ class MainScreen extends StatelessWidget {
           Tooltip(message: "Gabung Grup",
           child: IconButton(
             onPressed: (){
+              context.read<GroupData>().clearModel();
               Navigator.of(context).pushNamed('/join_group');
             },
             icon: const Icon(Icons.group),

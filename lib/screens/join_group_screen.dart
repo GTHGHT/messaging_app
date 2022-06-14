@@ -18,7 +18,6 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
   @override
   initState() {
     super.initState();
-    context.read<GroupData>().groupModel = GroupModel.initial();
   }
 
   @override

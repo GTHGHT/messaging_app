@@ -189,11 +189,11 @@ class MessageBubble extends StatelessWidget {
       Material(
         elevation: 3,
         color: senderUid ==
-                context.select<AccessServices, String>((value) => value.uid)
+                context.select<AccessServices, String>((value) => value.userModel.uid)
             ? Colors.lightBlueAccent
             : Colors.lightGreenAccent,
         borderRadius: senderUid ==
-                context.select<AccessServices, String>((value) => value.uid)
+                context.select<AccessServices, String>((value) => value.userModel.uid)
             ? const BorderRadius.all(Radius.circular(15)).copyWith(
                 topLeft: Radius.zero,
               )
@@ -204,7 +204,7 @@ class MessageBubble extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
           child: Column(
             crossAxisAlignment: senderUid ==
-                    context.select<AccessServices, String>((value) => value.uid)
+                    context.select<AccessServices, String>((value) => value.userModel.uid)
                 ? CrossAxisAlignment.start
                 : CrossAxisAlignment.end,
             children: [
@@ -241,11 +241,11 @@ class MessageBubble extends StatelessWidget {
     ];
     return Row(
       mainAxisAlignment: senderUid ==
-              context.select<AccessServices, String>((value) => value.uid)
+              context.select<AccessServices, String>((value) => value.userModel.uid)
           ? MainAxisAlignment.start
           : MainAxisAlignment.end,
       children: senderUid ==
-              context.select<AccessServices, String>((value) => value.uid)
+              context.select<AccessServices, String>((value) => value.userModel.uid)
           ? rowChildren
           : rowChildren.reversed.toList(),
     );

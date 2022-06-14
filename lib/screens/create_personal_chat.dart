@@ -57,12 +57,12 @@ class _CreatePersonalChatScreenState extends State<CreatePersonalChatScreen> {
             : ChatsListTile(
                 imagePath: context.watch<PersonalChatData>().friendModel.image,
                 title: context.watch<PersonalChatData>().friendModel.username,
-                onTap: () {
+                onTap: () async {
                   try {
-                    context.read<PersonalChatData>().createPersonalChat();
+                    await context.read<PersonalChatData>().createPersonalChat();
                     Navigator.of(context).pop();
                   }catch (e){
-                    showSnackBar(e.toString());
+                    showSnackBar("Personal Chat Sudah Ada");
                   }
                 },
               );

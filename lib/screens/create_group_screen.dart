@@ -34,7 +34,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                 ScaffoldMessenger.of(context)..clearSnackBars()
                   ..showSnackBar(
                     const SnackBar(
-                      content: Text("Buat Group Gagal"),
+                      content: Text("Group Sudah Ada"),
                     ),
                   );
               }

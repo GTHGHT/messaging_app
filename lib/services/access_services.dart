@@ -1,14 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:messaging_app/services/firestore_services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:messaging_app/utils/member_model.dart';
+
+import 'api.dart';
 
 class AccessServices extends ChangeNotifier {
   bool loading = false;
   final _auth = FirebaseAuth.instance;
-  String _uid = "";
+  final _storage = const FlutterSecureStorage();
+  MemberModel _userModel = MemberModel.initial();
 
-  String get uid => _uid;
+  MemberModel get userModel => _userModel;
 
   void showLoading(bool value) {
     loading = value;
@@ -46,11 +50,18 @@ class AccessServices extends ChangeNotifier {
         email: email.text,
         password: password.text,
       );
-      await FirestoreServices.addUserDoc(
+      await addUserDoc(
         username: username.text,
         email: email.text,
       );
-      _uid = _auth.currentUser!.uid;
+      _userModel = MemberModel(
+        uid: _auth.currentUser!.uid,
+        username: username.text,
+        image: "default_profile.png",
+        email: email.text,
+      );
+      await _storage.write(key: "KEY_USERNAME", value: email.text);
+      await _storage.write(key: "KEY_PASSWORD", value: password.text);
       showSnackBar("Berhasil Registrasi");
       showLoading(false);
       return true;
@@ -70,6 +81,48 @@ class AccessServices extends ChangeNotifier {
     }
   }
 
+  Future<void> addUserDoc(
+      {required String email, required String username}) async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      final userRef = Api(collection: 'users', docId: user.uid);
+      await userRef.setDocument({
+        'uid': user.uid,
+        'username': username,
+        'image': "default_profile.png",
+        'email': email,
+      });
+    }
+  }
+
+  Future<void> loadUserDoc() async {
+    final userRef = await Api(
+      collection: 'users',
+      docId: _auth.currentUser!.uid,
+    ).getDocument();
+    _userModel = MemberModel(
+      uid: _auth.currentUser!.uid,
+      username: userRef["username"],
+      image: userRef["image"],
+      email: userRef["email"],
+    );
+  }
+
+  Future<bool> loginUserFromStorage() async {
+    if (await _storage.read(key: 'KEY_USERNAME') != null) {
+      await _auth.signInWithEmailAndPassword(
+        email: await _storage.read(key: 'KEY_USERNAME') ?? '',
+        password: await _storage.read(key: 'KEY_PASSWORD') ?? '',
+      );
+      await loadUserDoc();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  static Future<void> changeUserName({required String name}) async {}
+
   Future<bool> login({
     required TextEditingController email,
     required TextEditingController password,
@@ -81,12 +134,13 @@ class AccessServices extends ChangeNotifier {
         showSnackBar("Isi Email dan Password Anda");
         throw Exception();
       }
-
       await _auth.signInWithEmailAndPassword(
         email: email.text,
         password: password.text,
       );
-      _uid = _auth.currentUser!.uid;
+      await loadUserDoc();
+      await _storage.write(key: "KEY_USERNAME", value: email.text);
+      await _storage.write(key: "KEY_PASSWORD", value: password.text);
       showSnackBar("Berhasil Login");
       showLoading(false);
       return true;
@@ -108,6 +162,7 @@ class AccessServices extends ChangeNotifier {
 
   void logout() {
     _auth.signOut();
+    _storage.deleteAll().ignore();
     notifyListeners();
   }
 }

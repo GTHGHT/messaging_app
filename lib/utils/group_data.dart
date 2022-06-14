@@ -11,6 +11,7 @@ class GroupData extends ChangeNotifier {
 
   final Api _groupApi = Api(collection: "", docId: "");
   final Api _userApi = Api(collection: "", docId: "");
+  final Api _currentUserApi = Api(collection: "");
   static final _auth = FirebaseAuth.instance;
 
   GroupModel get groupModel => _groupModel;
@@ -22,6 +23,10 @@ class GroupData extends ChangeNotifier {
     _userApi.collection = "users/${_auth.currentUser!.uid}/groups";
     _userApi.docId = _groupModel.id;
     notifyListeners();
+  }
+
+  clearModel(){
+    _groupModel = GroupModel.initial();
   }
 
   set groupId(String id) {
@@ -39,7 +44,8 @@ class GroupData extends ChangeNotifier {
 
   void loadUser(){
     _userApi.collection = "users/${_auth.currentUser!.uid}/groups";
-    notifyListeners();
+    _currentUserApi.collection = "users";
+    _currentUserApi.docId = _auth.currentUser!.uid;
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getUserGroups() {
@@ -62,7 +68,7 @@ class GroupData extends ChangeNotifier {
         return false;
       } else {
         await _groupApi.setDocument(groupModel.toMap());
-        final _userDoc = await Api(collection: 'users', docId: user.uid).getDocument();
+        final _userDoc = await _currentUserApi.getDocument();
         final _userModel = MemberModel.fromMap(_userDoc.data() ?? {});
         await Api(
           collection: "groups/${_groupModel.id}/members",
@@ -104,7 +110,7 @@ class GroupData extends ChangeNotifier {
         throw Exception("Sudah Join Grup Tersebut");
       }
       await _userApi.setDocument(groupModel.toMapShort());
-      final _userDoc = await Api(collection: 'groups', docId: user.uid).getDocument();
+      final _userDoc = await _currentUserApi.getDocument();
       final _userModel = MemberModel.fromMap(_userDoc.data() ?? {});
       await Api(collection: "groups/${groupModel.id}/members", docId: user.uid)
           .setDocument(_userModel.toMapShort());

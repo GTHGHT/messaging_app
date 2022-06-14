@@ -33,14 +33,14 @@ class PersonalChatsPage extends StatelessWidget {
         } else {
           return ListView.builder(
             itemBuilder: (context, index) {
-              final memberData =
+              final pcData =
                   personalChats[index].data() as Map<String, dynamic>;
               return ChatsListTile(
-                imagePath: memberData['image'] ?? defaultImage,
-                title: memberData['username'],
+                imagePath: pcData['image'] ?? defaultImage,
+                title: pcData['username'],
                 onTap: () {
                   context.read<ChatData>().groupModel =
-                      GroupModel.fromMap(memberData);
+                      GroupModel(id: pcData['id'], title: pcData['username'], image: pcData['image']);
                   Navigator.of(context).pushNamed("/chat");
                 },
               );

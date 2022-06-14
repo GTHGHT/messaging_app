@@ -5,12 +5,11 @@ import 'package:messaging_app/services/api.dart';
 import 'package:messaging_app/utils/member_model.dart';
 
 class PersonalChatData extends ChangeNotifier {
-  String _currentUid = "";
   MemberModel _friendModel = MemberModel.initial();
   bool loading = false;
 
   final Api _currentUserApi = Api(collection: "");
-  final Api _userApi = Api(collection: "users");
+  final Api _globalUserApi = Api(collection: "users");
   final Api _friendApi = Api(collection: "");
   final _auth = FirebaseAuth.instance;
 
@@ -23,14 +22,14 @@ class PersonalChatData extends ChangeNotifier {
     }
   }
 
-  void markAsLoading(){
+  void markAsLoading() {
     loading = true;
     notifyListeners();
   }
 
   Future<bool> getFriendFromEmail(String email) async {
     markAsLoading();
-    final friendData = await _userApi.searchDocument('email', email);
+    final friendData = await _globalUserApi.searchDocument('email', email);
 
     final friend = friendData.docs.toList();
     if (friend.isEmpty) {
@@ -38,7 +37,7 @@ class PersonalChatData extends ChangeNotifier {
       loading = false;
       notifyListeners();
       return false;
-    } else if (friend[0].data()['uid'] == _auth.currentUser!.uid){
+    } else if (friend[0].data()['uid'] == _auth.currentUser!.uid) {
       friendModel = MemberModel.initial();
       loading = false;
       notifyListeners();
@@ -55,7 +54,7 @@ class PersonalChatData extends ChangeNotifier {
     markAsLoading();
     final user = _auth.currentUser;
     if (user != null) {
-      _userApi.docId = user.uid;
+      _globalUserApi.docId = user.uid;
       _friendApi.docId = user.uid;
       _currentUserApi.docId = friendModel.uid;
       final personalChat = await _currentUserApi.getDocument();
@@ -64,31 +63,36 @@ class PersonalChatData extends ChangeNotifier {
         notifyListeners();
         throw Exception("Personal Chat Sudah Ada");
       }
-      final userDoc = await _userApi.getDocument();
+      final userDoc = await _globalUserApi.getDocument();
       final userModel = MemberModel.fromMap(userDoc.data() ?? {});
-      await _friendApi.setDocument(userModel.toMap());
-      await _currentUserApi.setDocument(friendModel.toMap());
-      final personalChatId = user.uid + "_" + friendModel.uid;
-      await Api(collection: "groups", docId: personalChatId).setDocument({
-        'id': personalChatId,
+      final pcId = await Api(collection: "groups").addDocumentWithId({
         'type': 2,
       });
-      final memberApi = Api(collection: "groups/$personalChatId/members");
-      memberApi.docId = user.uid;
+      await _friendApi.setDocument(
+        userModel.toMapShort()..addAll({'id': pcId}),
+      );
+      await _currentUserApi.setDocument(
+        friendModel.toMapShort()..addAll({'id': pcId}),
+      );
+      final memberApi = Api(collection: "groups/$pcId/members");
+      memberApi.docId = userModel.uid;
       await memberApi.setDocument(userModel.toMapShort());
+      memberApi.docId = friendModel.uid;
       await memberApi.setDocument(friendModel.toMapShort());
+      _friendModel = MemberModel.initial();
     }
     loading = false;
     notifyListeners();
   }
 
+  clearModel(){
+    _friendModel = MemberModel.initial();
+  }
+
   loadUser() {
-    _currentUid = _auth.currentUser!.uid;
     _currentUserApi.collection =
         "users/${_auth.currentUser!.uid}/personalChats";
   }
-
-  String get currentUid => _currentUid;
 
   MemberModel get friendModel => _friendModel;
 

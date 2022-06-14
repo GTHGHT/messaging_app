@@ -24,7 +24,7 @@ class GroupModel {
       'id': id,
       'type': 1,
       'title': title,
-      'image': image.isEmpty ? "default_profile.png": image,
+      'image': image.isEmpty ? "default_group.png": image,
     };
     if ((desc??"").isNotEmpty){
       groupMap['desc'] = desc ?? "";
@@ -36,7 +36,7 @@ class GroupModel {
     return {
       'id': id,
       'title': title,
-      'image': image.isEmpty ? "default_profile.png": image,
+      'image': image.isEmpty ? "default_group.png": image,
     };
   }
 
