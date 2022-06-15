@@ -43,7 +43,7 @@ class SettingsPage extends StatelessWidget {
           leading: Icon(Icons.color_lens),
           title: Text("Ubah Tema"),
           trailing: Icon(Icons.navigate_next),
-          onTap: () {},
+          onTap: () => Navigator.pushNamed(context, '/change_theme_mode'),
         ),
         ListTile(
           leading: Icon(Icons.logout),
