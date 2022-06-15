@@ -100,6 +100,7 @@ class Kongko extends StatelessWidget {
             displayColor: const Color(0xff2b2b2b),
           ),
           listTileTheme: const ListTileThemeData(
+            contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
             style: ListTileStyle.list,
             textColor: Color(0xff2b2b2b),
           ),
@@ -118,6 +119,7 @@ class Kongko extends StatelessWidget {
             ),
           ),
         ),
+
         // Dark Theme
         darkTheme: ThemeData.dark().copyWith(
           colorScheme: ThemeData.dark().colorScheme.copyWith(
@@ -135,6 +137,11 @@ class Kongko extends StatelessWidget {
           textTheme: textTheme.apply(
             bodyColor: Colors.white,
             displayColor: Colors.white,
+          ),
+          listTileTheme: const ListTileThemeData(
+            contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+            style: ListTileStyle.list,
+            textColor: Colors.white,
           ),
           primaryTextTheme: textTheme.apply(
             bodyColor: const Color(0xff2b2b2b),

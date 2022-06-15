@@ -42,6 +42,7 @@ class AccessServices extends ChangeNotifier {
         showSnackBar("Password tidak sama");
         throw Exception();
       }
+      email.text = email.text.toLowerCase();
       await _auth.createUserWithEmailAndPassword(
         email: email.text,
         password: password.text,
@@ -134,6 +135,7 @@ class AccessServices extends ChangeNotifier {
         showSnackBar("Isi Email dan Password Anda");
         throw Exception();
       }
+      email.text = email.text.toLowerCase();
       await _auth.signInWithEmailAndPassword(
         email: email.text,
         password: password.text,

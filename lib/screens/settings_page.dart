@@ -20,12 +20,7 @@ class SettingsPage extends StatelessWidget {
                 context.read<AccessServices>().userModel.image),
             builder: (_, snapshot) {
               if (!snapshot.hasData) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(),
-                  ],
-                );
+                return CircularProgressIndicator();
               }
               return CircleAvatar(
                 radius: 32,
@@ -38,25 +33,19 @@ class SettingsPage extends StatelessWidget {
           title: Text(context.watch<AccessServices>().userModel.username),
           subtitle: Text(context.watch<AccessServices>().userModel.email),
         ),
-        SizedBox(
-          height: 20,
-        ),
         ListTile(
-          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           leading: Icon(Icons.info),
           title: Text("Ubah Data Akun"),
           trailing: Icon(Icons.navigate_next),
           onTap: () {},
         ),
         ListTile(
-          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           leading: Icon(Icons.color_lens),
           title: Text("Ubah Tema"),
           trailing: Icon(Icons.navigate_next),
           onTap: () {},
         ),
         ListTile(
-          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           leading: Icon(Icons.logout),
           title: Text("Keluar Dari Akun"),
           onTap: () {

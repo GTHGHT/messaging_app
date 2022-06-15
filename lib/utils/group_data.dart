@@ -2,8 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:messaging_app/services/api.dart';
+import 'package:messaging_app/services/storage_services.dart';
 import 'package:messaging_app/utils/group_model.dart';
 import 'package:messaging_app/utils/member_model.dart';
+import 'dart:io';
 
 class GroupData extends ChangeNotifier {
   GroupModel _groupModel = GroupModel.initial();
@@ -57,7 +59,7 @@ class GroupData extends ChangeNotifier {
     }
   }
 
-  Future<bool> createGroup() async {
+  Future<bool> createGroup(File? groupImage) async {
     markAsLoading();
     final user = _auth.currentUser;
     if (user != null) {
@@ -67,6 +69,12 @@ class GroupData extends ChangeNotifier {
         notifyListeners();
         return false;
       } else {
+        if(groupImage != null){
+          final location = await StorageService.uploadFile(groupImage, "group_picture/");
+          groupModel.image = location;
+        } else {
+          groupModel.image = "default_group.png";
+        }
         await _groupApi.setDocument(groupModel.toMap());
         final _userDoc = await _currentUserApi.getDocument();
         final _userModel = MemberModel.fromMap(_userDoc.data() ?? {});

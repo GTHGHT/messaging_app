@@ -29,6 +29,7 @@ class PersonalChatData extends ChangeNotifier {
 
   Future<bool> getFriendFromEmail(String email) async {
     markAsLoading();
+    email = email.toLowerCase();
     final friendData = await _globalUserApi.searchDocument('email', email);
 
     final friend = friendData.docs.toList();

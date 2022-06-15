@@ -45,14 +45,16 @@ class MainScreen extends StatelessWidget {
               icon: const Icon(Icons.add),
             ),
           ),
-          Tooltip(message: "Gabung Grup",
-          child: IconButton(
-            onPressed: (){
-              context.read<GroupData>().clearModel();
-              Navigator.of(context).pushNamed('/join_group');
-            },
-            icon: const Icon(Icons.group),
-          ),)
+          Tooltip(
+            message: "Gabung Grup",
+            child: IconButton(
+              onPressed: () {
+                context.read<GroupData>().clearModel();
+                Navigator.of(context).pushNamed('/join_group');
+              },
+              icon: const Icon(Icons.group),
+            ),
+          )
         ],
       );
     } else {
@@ -92,7 +94,11 @@ class MainScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: _pages.elementAt(context.watch<BottomNavBarData>().currentIndex),
+      body: SafeArea(
+        child: _pages.elementAt(
+          context.watch<BottomNavBarData>().currentIndex,
+        ),
+      ),
     );
   }
 }
