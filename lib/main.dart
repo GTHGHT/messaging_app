@@ -1,14 +1,23 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:messaging_app/screens/access_screen.dart';
+import 'package:messaging_app/screens/create_group_screen.dart';
+import 'package:messaging_app/screens/create_personal_chat.dart';
+import 'package:messaging_app/screens/join_group_screen.dart';
 import 'package:messaging_app/screens/landing_screen.dart';
+import 'package:messaging_app/screens/load_user_screen.dart';
 import 'package:messaging_app/screens/login_screen.dart';
+import 'package:messaging_app/utils/bottom_nav_bar_data.dart';
+import 'package:messaging_app/utils/chat_data.dart';
+import 'package:messaging_app/utils/group_data.dart';
 import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
+import 'screens/chat_screen.dart';
 import 'screens/main_screen.dart';
 import 'screens/register_screen.dart';
-import 'services/account.dart';
+import 'services/access_services.dart';
+import 'utils/personal_chat_data.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +38,11 @@ class Kongko extends StatelessWidget {
         fontWeight: FontWeight.w500,
         fontSize: 22,
       ),
+      titleMedium: TextStyle(
+        fontFamily: "Mulish",
+        fontWeight: FontWeight.w500,
+        fontSize: 18,
+      ),
       bodyLarge: TextStyle(
         fontFamily: "Mulish",
         fontSize: 16,
@@ -36,6 +50,11 @@ class Kongko extends StatelessWidget {
       bodyMedium: TextStyle(
         fontFamily: "Mulish",
         fontSize: 14,
+      ),
+      bodySmall: TextStyle(
+        fontFamily: "Mulish",
+        fontWeight: FontWeight.w300,
+        fontSize: 12,
       ),
       displaySmall: TextStyle(
         fontFamily: "Philosopher",
@@ -45,9 +64,24 @@ class Kongko extends StatelessWidget {
 
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<AuthAccess>(create: (_) => AuthAccess()),
+        ChangeNotifierProvider<GroupData>(
+          create: (_) => GroupData(),
+        ),
+        ChangeNotifierProvider<AccessServices>(
+          create: (_) => AccessServices(),
+        ),
+        ChangeNotifierProvider<BottomNavBarData>(
+          create: (_) => BottomNavBarData(),
+        ),
+        ChangeNotifierProvider<ChatData>(
+          create: (_) => ChatData(),
+        ),
+        ChangeNotifierProvider<PersonalChatData>(
+          create: (_) => PersonalChatData(),
+        ),
       ],
       child: MaterialApp(
+        // Light Theme
         theme: ThemeData.light().copyWith(
           colorScheme: ThemeData.light().colorScheme.copyWith(
                 primary: Colors.lightBlue,
@@ -65,6 +99,10 @@ class Kongko extends StatelessWidget {
             bodyColor: const Color(0xff2b2b2b),
             displayColor: const Color(0xff2b2b2b),
           ),
+          listTileTheme: const ListTileThemeData(
+            style: ListTileStyle.list,
+            textColor: Color(0xff2b2b2b),
+          ),
           primaryTextTheme: textTheme.apply(
             bodyColor: Colors.white,
             displayColor: Colors.white,
@@ -80,6 +118,7 @@ class Kongko extends StatelessWidget {
             ),
           ),
         ),
+        // Dark Theme
         darkTheme: ThemeData.dark().copyWith(
           colorScheme: ThemeData.dark().colorScheme.copyWith(
                 primary: Colors.lightGreen,
@@ -113,11 +152,16 @@ class Kongko extends StatelessWidget {
           ),
         ),
         routes: {
-          "/": (_) => const LandingScreen(),
+          "/": (_) => const LoadUserScreen(),
+          "/landing": (_) => const LandingScreen(),
           "/access": (_) => const AccessScreen(),
           "/login": (_) => const LoginScreens(),
           "/register": (_) => const RegisterScreen(),
-          "/main": (_) => MainScreen(),
+          "/main": (_) => const MainScreen(),
+          "/chat": (_) => const ChatScreen(),
+          "/create_group": (_) => const CreateGroupScreen(),
+          "/join_group": (_) => const JoinGroupScreen(),
+          "/create_pc": (_) => const CreatePersonalChatScreen(),
         },
         initialRoute: "/",
       ),

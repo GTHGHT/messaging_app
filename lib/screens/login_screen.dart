@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:messaging_app/services/access_services.dart';
+import 'package:messaging_app/utils/chat_data.dart';
+import 'package:messaging_app/utils/group_data.dart';
+import 'package:messaging_app/utils/personal_chat_data.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreens extends StatefulWidget {
   const LoginScreens({Key? key}) : super(key: key);
@@ -8,19 +13,53 @@ class LoginScreens extends StatefulWidget {
 }
 
 class _LoginScreensState extends State<LoginScreens> {
-  TextEditingController usernameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   int passwordCounter = 0;
 
   @override
   void dispose() {
-    usernameController.dispose();
+    emailController.dispose();
     passwordController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final loginButton = context.watch<AccessServices>().loading
+        ? const CircularProgressIndicator()
+        : SizedBox(
+            width: MediaQuery.of(context).size.width / 2,
+            child: ElevatedButton(
+              onPressed: () {
+                context
+                    .read<AccessServices>()
+                    .login(
+                      email: emailController,
+                      password: passwordController,
+                      showSnackBar: (String message) {
+                        ScaffoldMessenger.of(context)
+                          ..clearSnackBars()
+                          ..showSnackBar(
+                            SnackBar(
+                              content: Text(message),
+                            ),
+                          );
+                      },
+                    )
+                    .then((value) {
+                  if (value) {
+                    context.read<GroupData>().loadUser();
+                    context.read<PersonalChatData>().loadUser();
+                    context.read<ChatData>().loadUser();
+                    Navigator.of(context).pushReplacementNamed("/main");
+                  }
+                });
+              },
+              child: const Text("Login"),
+            ),
+          );
+
     // TODO: Desain Ulang Bagian Login
     return Scaffold(
       body: SafeArea(
@@ -33,12 +72,12 @@ class _LoginScreensState extends State<LoginScreens> {
                 width: (MediaQuery.of(context).size.width / 6) * 5,
                 child: TextField(
                   keyboardType: TextInputType.emailAddress,
-                  controller: usernameController,
-                  decoration: InputDecoration(hintText: "Username"),
+                  controller: emailController,
+                  decoration: const InputDecoration(hintText: "Email"),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 25,
               ),
               SizedBox(
@@ -46,7 +85,7 @@ class _LoginScreensState extends State<LoginScreens> {
                 child: TextField(
                   controller: passwordController,
                   obscureText: true,
-                  decoration: InputDecoration(hintText: "Password"),
+                  decoration: const InputDecoration(hintText: "Password"),
                   style: Theme.of(context).textTheme.bodyMedium,
                   buildCounter: (
                     BuildContext context, {
@@ -60,17 +99,14 @@ class _LoginScreensState extends State<LoginScreens> {
                   },
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 50,
               ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width / 2,
-                child: ElevatedButton(
-                  onPressed: null,
-                  child: Text("Login"),
-                ),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 500),
+                child: loginButton,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 25,
               ),
               SizedBox(
@@ -79,7 +115,7 @@ class _LoginScreensState extends State<LoginScreens> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text("Kembali"),
+                  child: const Text("Kembali"),
                 ),
               )
             ],

@@ -1,13 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:messaging_app/utils/member_model.dart';
 
-class AuthAccess extends ChangeNotifier {
+import 'api.dart';
+
+class AccessServices extends ChangeNotifier {
   bool loading = false;
-  bool isLoggedIn = false;
-  FirebaseAuth _auth = FirebaseAuth.instance;
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final _auth = FirebaseAuth.instance;
+  final _storage = const FlutterSecureStorage();
+  MemberModel _userModel = MemberModel.initial();
+
+  MemberModel get userModel => _userModel;
 
   void showLoading(bool value) {
     loading = value;
@@ -37,7 +42,7 @@ class AuthAccess extends ChangeNotifier {
         showSnackBar("Password tidak sama");
         throw Exception();
       }
-      final newUser = await _auth.createUserWithEmailAndPassword(
+      await _auth.createUserWithEmailAndPassword(
         email: email.text,
         password: password.text,
       );
@@ -45,13 +50,20 @@ class AuthAccess extends ChangeNotifier {
         email: email.text,
         password: password.text,
       );
-      isLoggedIn = true;
-      await _firestore.collection("users").doc(newUser.user!.uid).set({
-        "image": "https://firebasestorage.googleapis.com/v0/b/kongko-ee34d.appspot.com/o/default_profile.png?alt=media&token=b11b4779-be0e-4de4-b501-c32fe3e9b4c9",
-        "username": username.text,
-        "email": email.text,
-      });
+      await addUserDoc(
+        username: username.text,
+        email: email.text,
+      );
+      _userModel = MemberModel(
+        uid: _auth.currentUser!.uid,
+        username: username.text,
+        image: "default_profile.png",
+        email: email.text,
+      );
+      await _storage.write(key: "KEY_USERNAME", value: email.text);
+      await _storage.write(key: "KEY_PASSWORD", value: password.text);
       showSnackBar("Berhasil Registrasi");
+      showLoading(false);
       return true;
     } on FirebaseAuthException catch (e) {
       if (e.code == "email-already-in-use") {
@@ -69,8 +81,49 @@ class AuthAccess extends ChangeNotifier {
     }
   }
 
-  Future<bool> login(
-    BuildContext context, {
+  Future<void> addUserDoc(
+      {required String email, required String username}) async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      final userRef = Api(collection: 'users', docId: user.uid);
+      await userRef.setDocument({
+        'uid': user.uid,
+        'username': username,
+        'image': "default_profile.png",
+        'email': email,
+      });
+    }
+  }
+
+  Future<void> loadUserDoc() async {
+    final userRef = await Api(
+      collection: 'users',
+      docId: _auth.currentUser!.uid,
+    ).getDocument();
+    _userModel = MemberModel(
+      uid: _auth.currentUser!.uid,
+      username: userRef["username"],
+      image: userRef["image"],
+      email: userRef["email"],
+    );
+  }
+
+  Future<bool> loginUserFromStorage() async {
+    if (await _storage.read(key: 'KEY_USERNAME') != null) {
+      await _auth.signInWithEmailAndPassword(
+        email: await _storage.read(key: 'KEY_USERNAME') ?? '',
+        password: await _storage.read(key: 'KEY_PASSWORD') ?? '',
+      );
+      await loadUserDoc();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  static Future<void> changeUserName({required String name}) async {}
+
+  Future<bool> login({
     required TextEditingController email,
     required TextEditingController password,
     required void Function(String message) showSnackBar,
@@ -81,13 +134,15 @@ class AuthAccess extends ChangeNotifier {
         showSnackBar("Isi Email dan Password Anda");
         throw Exception();
       }
-
       await _auth.signInWithEmailAndPassword(
         email: email.text,
         password: password.text,
       );
-      isLoggedIn = true;
-      showSnackBar("Berhasil Register");
+      await loadUserDoc();
+      await _storage.write(key: "KEY_USERNAME", value: email.text);
+      await _storage.write(key: "KEY_PASSWORD", value: password.text);
+      showSnackBar("Berhasil Login");
+      showLoading(false);
       return true;
     } on FirebaseAuthException catch (e) {
       if (e.code == "user-not-found") {
@@ -107,7 +162,7 @@ class AuthAccess extends ChangeNotifier {
 
   void logout() {
     _auth.signOut();
-    isLoggedIn = false;
+    _storage.deleteAll().ignore();
     notifyListeners();
   }
 }

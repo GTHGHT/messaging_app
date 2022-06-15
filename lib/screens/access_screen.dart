@@ -35,7 +35,7 @@ class AccessScreen extends StatelessWidget {
                   onPressed: (){
                     Navigator.of(context).pushNamed("/register");
                   },
-                  child: Text("Register"),
+                  child: const Text("Register"),
                 ),
               ),
               const SizedBox(
