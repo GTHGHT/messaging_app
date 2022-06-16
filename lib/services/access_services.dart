@@ -1,7 +1,13 @@
+import 'dart:async';
+import 'dart:ffi';
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:messaging_app/services/storage_services.dart';
 import 'package:messaging_app/utils/member_model.dart';
 
 import 'api.dart';
@@ -17,6 +23,109 @@ class AccessServices extends ChangeNotifier {
   void showLoading(bool value) {
     loading = value;
     notifyListeners();
+  }
+
+  Future<void> changeImage(File? newImage) async {
+    if (newImage == null) return;
+
+    try{
+      final location = await StorageService.uploadFile(newImage, "profile_picture/");
+      if(_userModel.image != "defaul_profile.png") await StorageService.delete(_userModel.image);
+      await Api(collection: "users", doc: _userModel.uid).updateDocument({'image': location});
+      _userModel.image = location;
+      notifyListeners();
+    }catch(e){
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> changeUsername(String newUsername) async {
+    if (newUsername == userModel.username) return;
+
+    showLoading(true);
+    try {
+      final firestore = FirebaseFirestore.instance;
+      int counter = 0;
+      final groups = await firestore
+          .collection('users/${_userModel.uid}/groups')
+          .get()
+          .then((QuerySnapshot snapshot) {
+        return snapshot.docs;
+      });
+
+      final personalChats = await firestore
+          .collection('users/${_userModel.uid}/personalChats')
+          .get()
+          .then((QuerySnapshot snapshot) {
+        return snapshot.docs;
+      });
+
+      var batch = firestore.batch();
+      for (DocumentSnapshot i in groups) {
+        final groupMember = firestore
+            .collection("groups/${i["id"]}/members")
+            .doc(_userModel.uid);
+        final groupMessages = await firestore
+            .collection("groups/${i["id"]}/messages")
+            .where('sender_uid', isEqualTo: _userModel.uid)
+            .get()
+            .then((QuerySnapshot snapshot) => snapshot.docs);
+        for (DocumentSnapshot j in groupMessages) {
+          final groupMessages =
+              firestore.collection("groups/${i["id"]}/messages").doc(j.id);
+          batch.update(groupMessages, {'sender': newUsername});
+          if (++counter >= 500) await batch.commit();
+        }
+        batch.update(groupMember, {'username': newUsername});
+        if (++counter >= 500) await batch.commit();
+      }
+
+      for (DocumentSnapshot i in personalChats) {
+        final groupMember = firestore
+            .collection("groups/${i["id"]}/members")
+            .doc(_userModel.uid);
+        final groupMessages = await firestore
+            .collection("groups/${i["id"]}/messages")
+            .where('sender_uid', isEqualTo: _userModel.uid)
+            .get()
+            .then((QuerySnapshot snapshot) => snapshot.docs);
+        for (DocumentSnapshot j in groupMessages) {
+          final groupMessages =
+              firestore.collection("groups/${i["id"]}/messages").doc(j.id);
+          batch.update(groupMessages, {'sender': newUsername});
+          if (++counter >= 500) await batch.commit();
+        }
+        batch.update(groupMember, {'username': newUsername});
+        if (++counter >= 500) await batch.commit();
+      }
+
+      final currentUsers = firestore.collection("users").doc(_userModel.uid);
+      batch.update(currentUsers, {'username': newUsername});
+      await batch.commit();
+      _userModel.username = newUsername;
+
+      showLoading(false);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> changeEmail(String newEmail) async {
+    if (newEmail == userModel.email) return;
+
+    showLoading(true);
+    try {
+      final currentUser = _auth.currentUser;
+      if (currentUser != null) {
+        await currentUser.updateEmail(newEmail);
+        await Api(collection: "users", doc: _userModel.uid)
+            .updateDocument({'email': newEmail});
+        logout();
+      }
+      showLoading(false);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 
   Future<bool> register({
@@ -86,7 +195,7 @@ class AccessServices extends ChangeNotifier {
       {required String email, required String username}) async {
     final user = _auth.currentUser;
     if (user != null) {
-      final userRef = Api(collection: 'users', docId: user.uid);
+      final userRef = Api(collection: 'users', doc: user.uid);
       await userRef.setDocument({
         'uid': user.uid,
         'username': username,
@@ -99,7 +208,7 @@ class AccessServices extends ChangeNotifier {
   Future<void> loadUserDoc() async {
     final userRef = await Api(
       collection: 'users',
-      docId: _auth.currentUser!.uid,
+      doc: _auth.currentUser!.uid,
     ).getDocument();
     _userModel = MemberModel(
       uid: _auth.currentUser!.uid,
@@ -121,8 +230,6 @@ class AccessServices extends ChangeNotifier {
       return false;
     }
   }
-
-  static Future<void> changeUserName({required String name}) async {}
 
   Future<bool> login({
     required TextEditingController email,
@@ -164,6 +271,7 @@ class AccessServices extends ChangeNotifier {
 
   void logout() {
     _auth.signOut();
+    _userModel = MemberModel.initial();
     _storage.deleteAll().ignore();
     notifyListeners();
   }

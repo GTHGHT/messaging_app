@@ -27,8 +27,10 @@ class ThemeModeScreen extends StatelessWidget {
             titleString: "Pengaturan Sistem",
             onTap: () {
               context.read<ThemeModeData>().changeTheme(ThemeMode.system);
-              showSnackBar(context,
-                  "Tema berubah menjadi Pengaturan Sistem");
+              showSnackBar(
+                context,
+                "Tema berubah menjadi Pengaturan Sistem",
+              );
             },
             groupValue: context.watch<ThemeModeData>().themeMode,
             value: ThemeMode.system,
@@ -37,7 +39,10 @@ class ThemeModeScreen extends StatelessWidget {
             titleString: "Terang",
             onTap: () {
               context.read<ThemeModeData>().changeTheme(ThemeMode.light);
-              showSnackBar(context, "Tema berubah menjadi Terang");
+              showSnackBar(
+                context,
+                "Tema berubah menjadi Terang",
+              );
             },
             groupValue: context.watch<ThemeModeData>().themeMode,
             value: ThemeMode.light,
@@ -46,7 +51,10 @@ class ThemeModeScreen extends StatelessWidget {
             titleString: "Gelap",
             onTap: () {
               context.read<ThemeModeData>().changeTheme(ThemeMode.dark);
-              showSnackBar(context, "Tema berubah menjadi Gelap");
+              showSnackBar(
+                context,
+                "Tema berubah menjadi Gelap",
+              );
             },
             groupValue: context.watch<ThemeModeData>().themeMode,
             value: ThemeMode.dark,

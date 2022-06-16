@@ -1,17 +1,20 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:messaging_app/screens/ThemeModeScreen.dart';
+import 'package:messaging_app/screens/info_group_screen.dart';
+import 'package:messaging_app/screens/theme_mode_screen.dart';
 import 'package:messaging_app/screens/access_screen.dart';
 import 'package:messaging_app/screens/create_group_screen.dart';
 import 'package:messaging_app/screens/create_personal_chat.dart';
 import 'package:messaging_app/screens/join_group_screen.dart';
 import 'package:messaging_app/screens/landing_screen.dart';
-import 'package:messaging_app/screens/load_user_screen.dart';
+import 'package:messaging_app/screens/loading_screen.dart';
 import 'package:messaging_app/screens/login_screen.dart';
+import 'package:messaging_app/screens/update_account_screen.dart';
 import 'package:messaging_app/utils/bottom_nav_bar_data.dart';
 import 'package:messaging_app/utils/chat_data.dart';
 import 'package:messaging_app/utils/group_data.dart';
-import 'package:messaging_app/utils/theme_mode_data.dart';
+import 'package:messaging_app/utils/image_data.dart';
+import 'utils/theme_mode_data.dart';
 import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
@@ -68,6 +71,9 @@ class Kongko extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<GroupData>(
           create: (_) => GroupData(),
+        ),
+        ChangeNotifierProvider<ImageData>(
+          create: (_) => ImageData(),
         ),
         ChangeNotifierProvider<AccessServices>(
           create: (_) => AccessServices(),
@@ -166,7 +172,7 @@ class Kongko extends StatelessWidget {
             ),
           ),
           routes: {
-            "/": (_) => const LoadUserScreen(),
+            "/": (_) => const LoadingScreen(),
             "/landing": (_) => const LandingScreen(),
             "/access": (_) => const AccessScreen(),
             "/login": (_) => const LoginScreens(),
@@ -177,6 +183,8 @@ class Kongko extends StatelessWidget {
             "/join_group": (_) => const JoinGroupScreen(),
             "/create_pc": (_) => const CreatePersonalChatScreen(),
             "/change_theme_mode": (_) => const ThemeModeScreen(),
+            "/update_account": (_) => const UpdateAccountScreen(),
+            "/chat/info": (_) => const InfoGroupScreen(),
           },
           initialRoute: "/",
         );

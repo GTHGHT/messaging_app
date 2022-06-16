@@ -31,49 +31,47 @@ class _RegisterScreensState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final registerButton =
-    context
-        .watch<AccessServices>()
-        .loading ?
-    const CircularProgressIndicator() :
-    SizedBox(
-      width: MediaQuery
-          .of(context)
-          .size
-          .width / 2,
-      child: ElevatedButton(
-        onPressed: () {
-          context
-              .read<AccessServices>()
-              .register(
-            username: usernameController,
-            email: emailController,
-            password: passwordController,
-            confirmPassword: confirmPasswordController,
-            showSnackBar: (String message) {
-              ScaffoldMessenger.of(context)
-                ..clearSnackBars()
-                ..showSnackBar(
-                  SnackBar(
-                    content: Text(message),
-                  ),
-                );
-            },
+    final registerButton = context.watch<AccessServices>().loading
+        ? SizedBox(
+            height: 52.0,
+            width: 52.0,
+            child: const CircularProgressIndicator(),
           )
-              .then(
-                (value) {
-              if (value) {
-                context.read<GroupData>().loadUser();
-                context.read<PersonalChatData>().loadUser();
-                context.read<ChatData>().loadUser();
-                Navigator.pushReplacementNamed(context, "/main");
-              }
-            },
+        : SizedBox(
+            width: MediaQuery.of(context).size.width / 2,
+            child: ElevatedButton(
+              onPressed: () {
+                context
+                    .read<AccessServices>()
+                    .register(
+                      username: usernameController,
+                      email: emailController,
+                      password: passwordController,
+                      confirmPassword: confirmPasswordController,
+                      showSnackBar: (String message) {
+                        ScaffoldMessenger.of(context)
+                          ..clearSnackBars()
+                          ..showSnackBar(
+                            SnackBar(
+                              content: Text(message),
+                            ),
+                          );
+                      },
+                    )
+                    .then(
+                  (value) {
+                    if (value) {
+                      context.read<GroupData>().loadUser();
+                      context.read<PersonalChatData>().loadUser();
+                      context.read<ChatData>().loadUser();
+                      Navigator.pushReplacementNamed(context, "/main");
+                    }
+                  },
+                );
+              },
+              child: const Text("Register"),
+            ),
           );
-        },
-        child: const Text("Register"),
-      ),
-    );
 
     // TODO: Desain Ulang Bagian Register
     return Scaffold(
@@ -84,54 +82,37 @@ class _RegisterScreensState extends State<RegisterScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(
-                width: (MediaQuery
-                    .of(context)
-                    .size
-                    .width / 6) * 5,
+                width: (MediaQuery.of(context).size.width / 6) * 5,
                 child: TextField(
                   controller: usernameController,
                   decoration: const InputDecoration(hintText: "Username"),
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodyMedium,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
               const SizedBox(
                 height: 25,
               ),
               SizedBox(
-                width: (MediaQuery
-                    .of(context)
-                    .size
-                    .width / 6) * 5,
+                width: (MediaQuery.of(context).size.width / 6) * 5,
                 child: TextField(
                   keyboardType: TextInputType.emailAddress,
                   controller: emailController,
                   decoration: const InputDecoration(hintText: "Email"),
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodyMedium,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
               const SizedBox(
                 height: 25,
               ),
               SizedBox(
-                width: (MediaQuery
-                    .of(context)
-                    .size
-                    .width / 6) * 5,
+                width: (MediaQuery.of(context).size.width / 6) * 5,
                 child: TextField(
                   controller: passwordController,
                   obscureText: true,
                   decoration: const InputDecoration(hintText: "Password"),
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodyMedium,
-                  buildCounter: (BuildContext context, {
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  buildCounter: (
+                    BuildContext context, {
                     required int currentLength,
                     required int? maxLength,
                     required bool isFocused,
@@ -146,20 +127,15 @@ class _RegisterScreensState extends State<RegisterScreen> {
                 height: 25,
               ),
               SizedBox(
-                width: (MediaQuery
-                    .of(context)
-                    .size
-                    .width / 6) * 5,
+                width: (MediaQuery.of(context).size.width / 6) * 5,
                 child: TextField(
                   controller: confirmPasswordController,
                   obscureText: true,
-                  decoration: const InputDecoration(
-                      hintText: "Konfirmasi Password"),
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodyMedium,
-                  buildCounter: (BuildContext context, {
+                  decoration:
+                      const InputDecoration(hintText: "Konfirmasi Password"),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  buildCounter: (
+                    BuildContext context, {
                     required int currentLength,
                     required int? maxLength,
                     required bool isFocused,
@@ -174,17 +150,14 @@ class _RegisterScreensState extends State<RegisterScreen> {
                 height: 50,
               ),
               AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 500),
-                  child: registerButton,
+                duration: const Duration(milliseconds: 500),
+                child: registerButton,
               ),
               const SizedBox(
                 height: 25,
               ),
               SizedBox(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width / 2,
+                width: MediaQuery.of(context).size.width / 2,
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pop();

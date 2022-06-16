@@ -55,9 +55,9 @@ class PersonalChatData extends ChangeNotifier {
     markAsLoading();
     final user = _auth.currentUser;
     if (user != null) {
-      _globalUserApi.docId = user.uid;
-      _friendApi.docId = user.uid;
-      _currentUserApi.docId = friendModel.uid;
+      _globalUserApi.doc = user.uid;
+      _friendApi.doc = user.uid;
+      _currentUserApi.doc = friendModel.uid;
       final personalChat = await _currentUserApi.getDocument();
       if (personalChat.exists) {
         loading = false;
@@ -76,9 +76,9 @@ class PersonalChatData extends ChangeNotifier {
         friendModel.toMapShort()..addAll({'id': pcId}),
       );
       final memberApi = Api(collection: "groups/$pcId/members");
-      memberApi.docId = userModel.uid;
+      memberApi.doc = userModel.uid;
       await memberApi.setDocument(userModel.toMapShort());
-      memberApi.docId = friendModel.uid;
+      memberApi.doc = friendModel.uid;
       await memberApi.setDocument(friendModel.toMapShort());
       _friendModel = MemberModel.initial();
     }

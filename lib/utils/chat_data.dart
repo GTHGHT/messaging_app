@@ -32,7 +32,27 @@ class ChatData extends ChangeNotifier {
     return api.streamCollection(sortBy: 'sent_time');
   }
 
-  GroupModel get groupModel => _groupModel;
+  Future<void> loadDesc() async {
+    if (_groupModel.desc != null) {
+      _groupModel.desc = await Api(collection: "groups", doc: _groupModel.id)
+          .getDocument()
+          .then((value) => value.data()!["desc"]);
+      notifyListeners();
+    }
+  }
+
+  loadUser() async {
+    final _currentUserDoc =
+        await Api(collection: "users", doc: _auth.currentUser!.uid)
+            .getDocument();
+    _currentUserModel =
+        MemberModel.fromMap(_currentUserDoc.data() as Map<String, dynamic>);
+  }
+
+  set messageText(String value) {
+    _messageText = value;
+    notifyListeners();
+  }
 
   set groupModel(GroupModel value) {
     if (_groupModel.id != value.id) {
@@ -44,6 +64,8 @@ class ChatData extends ChangeNotifier {
     notifyListeners();
   }
 
+  GroupModel get groupModel => _groupModel;
+
   String get groupId => _groupModel.id;
 
   String get title => _groupModel.title;
@@ -51,17 +73,4 @@ class ChatData extends ChangeNotifier {
   String get image => _groupModel.image;
 
   String get messageText => _messageText;
-
-  loadUser() async {
-    final _currentUserDoc =
-        await Api(collection: "users", docId: _auth.currentUser!.uid)
-            .getDocument();
-    _currentUserModel =
-        MemberModel.fromMap(_currentUserDoc.data() as Map<String, dynamic>);
-  }
-
-  set messageText(String value) {
-    _messageText = value;
-    notifyListeners();
-  }
 }

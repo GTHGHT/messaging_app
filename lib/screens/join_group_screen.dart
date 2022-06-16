@@ -40,20 +40,20 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
   Widget build(BuildContext context) {
     final searchButton =
         context.select<GroupData, bool>((value) => value.loading)
-            ? const CircularProgressIndicator()
+            ? SizedBox(
+                height: 52.0,
+                width: 52.0,
+                child: const CircularProgressIndicator(),
+              )
             : ElevatedButton(
                 onPressed: () async {
                   try {
-                    if(controller.text.isNotEmpty) {
-                      context
-                          .read<GroupData>()
-                          .groupId = controller.text;
+                    if (controller.text.isNotEmpty) {
+                      context.read<GroupData>().groupId = controller.text;
                       final groupInfo =
-                      await context.read<GroupData>().getGroupInfo();
+                          await context.read<GroupData>().getGroupInfo();
                       if (groupInfo.exists) {
-                        context
-                            .read<GroupData>()
-                            .groupModel =
+                        context.read<GroupData>().groupModel =
                             GroupModel.fromMap(groupInfo.data()!);
                         return;
                       }

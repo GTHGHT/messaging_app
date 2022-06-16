@@ -11,8 +11,8 @@ class GroupData extends ChangeNotifier {
   GroupModel _groupModel = GroupModel.initial();
   bool loading = false;
 
-  final Api _groupApi = Api(collection: "", docId: "");
-  final Api _userApi = Api(collection: "", docId: "");
+  final Api _groupApi = Api(collection: "", doc: "");
+  final Api _userApi = Api(collection: "", doc: "");
   final Api _currentUserApi = Api(collection: "");
   static final _auth = FirebaseAuth.instance;
 
@@ -21,9 +21,9 @@ class GroupData extends ChangeNotifier {
   set groupModel(GroupModel value) {
     _groupModel = value;
     _groupApi.collection = "groups";
-    _groupApi.docId = _groupModel.id;
+    _groupApi.doc = _groupModel.id;
     _userApi.collection = "users/${_auth.currentUser!.uid}/groups";
-    _userApi.docId = _groupModel.id;
+    _userApi.doc = _groupModel.id;
     notifyListeners();
   }
 
@@ -35,7 +35,7 @@ class GroupData extends ChangeNotifier {
     _groupModel = GroupModel.initial();
     _groupModel.id = id;
     _groupApi.collection = "groups";
-    _groupApi.docId = _groupModel.id;
+    _groupApi.doc = _groupModel.id;
     notifyListeners();
   }
 
@@ -47,7 +47,7 @@ class GroupData extends ChangeNotifier {
   void loadUser(){
     _userApi.collection = "users/${_auth.currentUser!.uid}/groups";
     _currentUserApi.collection = "users";
-    _currentUserApi.docId = _auth.currentUser!.uid;
+    _currentUserApi.doc = _auth.currentUser!.uid;
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getUserGroups() {
@@ -80,7 +80,7 @@ class GroupData extends ChangeNotifier {
         final _userModel = MemberModel.fromMap(_userDoc.data() ?? {});
         await Api(
           collection: "groups/${_groupModel.id}/members",
-          docId: user.uid,
+          doc: user.uid,
         ).setDocument(_userModel.toMapShort());
         await _userApi.setDocument(groupModel.toMapShort());
         loading = false;
@@ -120,7 +120,7 @@ class GroupData extends ChangeNotifier {
       await _userApi.setDocument(groupModel.toMapShort());
       final _userDoc = await _currentUserApi.getDocument();
       final _userModel = MemberModel.fromMap(_userDoc.data() ?? {});
-      await Api(collection: "groups/${groupModel.id}/members", docId: user.uid)
+      await Api(collection: "groups/${groupModel.id}/members", doc: user.uid)
           .setDocument(_userModel.toMapShort());
     }
     loading = false;

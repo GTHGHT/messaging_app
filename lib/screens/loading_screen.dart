@@ -1,26 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:messaging_app/services/access_services.dart';
+import 'package:messaging_app/utils/theme_mode_data.dart';
 import 'package:provider/provider.dart';
 
 import '../utils/chat_data.dart';
 import '../utils/group_data.dart';
 import '../utils/personal_chat_data.dart';
 
-class LoadUserScreen extends StatefulWidget {
-  const LoadUserScreen({Key? key}) : super(key: key);
+class LoadingScreen extends StatefulWidget {
+  const LoadingScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoadUserScreen> createState() => _LoadUserScreenState();
+  State<LoadingScreen> createState() => _LoadingScreenState();
 }
 
-class _LoadUserScreenState extends State<LoadUserScreen> {
+class _LoadingScreenState extends State<LoadingScreen> {
 
+  @override
   initState() {
     super.initState();
     loadUser();
   }
 
   loadUser() async{
+    context.read<ThemeModeData>().loadTheme();
     final bool loginStatus =
     await context.read<AccessServices>().loginUserFromStorage();
     if (loginStatus) {

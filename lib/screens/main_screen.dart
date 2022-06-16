@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../utils/bottom_nav_bar_data.dart';
 import '../utils/group_data.dart';
+import '../utils/image_data.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -40,6 +41,7 @@ class MainScreen extends StatelessWidget {
             message: "Buat Grup",
             child: IconButton(
               onPressed: () {
+                context.read<ImageData>().clearImage();
                 Navigator.of(context).pushNamed('/create_group');
               },
               icon: const Icon(Icons.add),

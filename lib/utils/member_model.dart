@@ -1,8 +1,8 @@
 class MemberModel{
   final String uid;
-  final String username;
-  final String image;
-  final String email;
+  String username;
+  String image;
+  String email;
 
   MemberModel({
     required this.uid,

@@ -14,32 +14,38 @@ class ChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            ClipOval(
-              child: FutureBuilder<String>(
-                future: StorageService.getImageLink(
-                    context.select<ChatData, String>((value) => value.image)),
-                builder: (_, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                  return Image(
-                    image: NetworkImage(snapshot.data ?? "default_profile.png"),
-                    height: 40,
-                    width: 40,
-                  );
-                },
+        title: ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: ClipOval(
+            child: FutureBuilder<String>(
+              future: StorageService.getImageLink(
+                context.select<ChatData, String>((value) => value.image),
               ),
+              builder: (_, snapshot) {
+                if (!snapshot.hasData) {
+                  return const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                return Image(
+                  image: NetworkImage(snapshot.data ?? "default_profile.png"),
+                  height: 40,
+                  width: 40,
+                );
+              },
             ),
-            const SizedBox(
-              width: 15,
-            ),
-            Text(context.select<ChatData, String>((value) => value.title)),
-          ],
+          ),
+          title: Text(
+            context.select<ChatData, String>((value) => value.title),
+            style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
+          ),
+          onTap: () {
+            context.read<ChatData>().loadDesc();
+            Navigator.of(context).pushNamed("/chat/info");
+          },
         ),
       ),
       body: Column(
@@ -181,7 +187,7 @@ class MessageBubble extends StatelessWidget {
     required this.text,
     required this.senderUid,
     required this.sentTime,
-  }): super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -189,11 +195,13 @@ class MessageBubble extends StatelessWidget {
       Material(
         elevation: 3,
         color: senderUid ==
-                context.select<AccessServices, String>((value) => value.userModel.uid)
+                context.select<AccessServices, String>(
+                    (value) => value.userModel.uid)
             ? Colors.lightBlueAccent
             : Colors.lightGreenAccent,
         borderRadius: senderUid ==
-                context.select<AccessServices, String>((value) => value.userModel.uid)
+                context.select<AccessServices, String>(
+                    (value) => value.userModel.uid)
             ? const BorderRadius.all(Radius.circular(15)).copyWith(
                 topLeft: Radius.zero,
               )
@@ -204,7 +212,8 @@ class MessageBubble extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
           child: Column(
             crossAxisAlignment: senderUid ==
-                    context.select<AccessServices, String>((value) => value.userModel.uid)
+                    context.select<AccessServices, String>(
+                        (value) => value.userModel.uid)
                 ? CrossAxisAlignment.start
                 : CrossAxisAlignment.end,
             children: [
@@ -241,11 +250,13 @@ class MessageBubble extends StatelessWidget {
     ];
     return Row(
       mainAxisAlignment: senderUid ==
-              context.select<AccessServices, String>((value) => value.userModel.uid)
+              context.select<AccessServices, String>(
+                  (value) => value.userModel.uid)
           ? MainAxisAlignment.start
           : MainAxisAlignment.end,
       children: senderUid ==
-              context.select<AccessServices, String>((value) => value.userModel.uid)
+              context.select<AccessServices, String>(
+                  (value) => value.userModel.uid)
           ? rowChildren
           : rowChildren.reversed.toList(),
     );

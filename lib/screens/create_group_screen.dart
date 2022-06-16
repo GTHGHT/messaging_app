@@ -1,10 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:image_cropper/image_cropper.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:messaging_app/utils/group_model.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:messaging_app/utils/image_data.dart';
 import 'package:provider/provider.dart';
 
 import '../utils/group_data.dart';
@@ -21,46 +17,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
   TextEditingController groupTitle = TextEditingController();
   TextEditingController groupDesc = TextEditingController();
 
-  File? _image;
-  final ImagePicker _picker = ImagePicker();
-
-  showPickerDialog() {
-    showDialog(
-      context: context,
-      builder: (ctx) => SimpleDialog(
-        title: Text("Pilih Sumber"),
-        children: [
-          ListTile(
-            leading: Icon(Icons.folder),
-            title: Text("dari Galeri"),
-            onTap: () async {
-              await getImage(ImageSource.gallery);
-              Navigator.pop(ctx);
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.camera),
-            title: Text("dari Kamera"),
-            onTap: () async {
-              await getImage(ImageSource.camera);
-              Navigator.pop(ctx);
-            },
-          )
-        ],
-      ),
-    );
-  }
-
-  Future<bool> checkAndRequestCameraPermissions() async {
-    PermissionStatus permission = await Permission.camera.status;
-    if (permission != PermissionStatus.granted) {
-      final permissions = await Permission.camera.request();
-      return permissions == PermissionStatus.granted;
-    } else {
-      return true;
-    }
-  }
-  showSnackBar(String content){
+  showSnackBar(String content) {
     ScaffoldMessenger.of(context)
       ..clearSnackBars()
       ..showSnackBar(
@@ -68,32 +25,6 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
           content: Text(content),
         ),
       );
-
-  }
-
-  Future<void> getImage(ImageSource source) async {
-    if (await checkAndRequestCameraPermissions()) {
-      final pickedImage = await _picker.pickImage(source: source);
-      if (pickedImage != null) {
-        final croppedImage = await ImageCropper().cropImage(
-          sourcePath: pickedImage.path,
-          aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
-          aspectRatioPresets: [CropAspectRatioPreset.square],
-          compressQuality: 90,
-          compressFormat: ImageCompressFormat.jpg,
-        );
-        if (croppedImage != null) {
-          final fileImage = File(croppedImage.path);
-          setState(() {
-            _image = fileImage;
-          });
-        } else {
-          showSnackBar("Crop Image Terlebih Dahulu");
-        }
-      } else {
-        showSnackBar("Tidak Ada Gambar Yang Dipilih");
-      }
-    }
   }
 
   @override
@@ -107,7 +38,11 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
   @override
   Widget build(BuildContext context) {
     final addButton = context.select<GroupData, bool>((value) => value.loading)
-        ? const CircularProgressIndicator()
+        ? SizedBox(
+            height: 52.0,
+            width: 52.0,
+            child: const CircularProgressIndicator(),
+          )
         : ElevatedButton(
             onPressed: () async {
               context.read<GroupData>().groupModel = GroupModel(
@@ -115,7 +50,9 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                   title: groupTitle.text,
                   image: "",
                   desc: groupDesc.text);
-              bool success = await context.read<GroupData>().createGroup(_image);
+              bool success = await context
+                  .read<GroupData>()
+                  .createGroup(context.read<ImageData>().image);
               if (success) {
                 Navigator.of(context).pop();
               } else {
@@ -139,12 +76,13 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
         child: ListView(
           children: [
             GestureDetector(
-              onTap: showPickerDialog,
+              onTap: () =>
+                  context.read<ImageData>().showImagePickerDialog(context),
               child: CircleAvatar(
                 radius: 64,
                 child: ClipOval(
-                  child: _image != null
-                      ? Image.file(_image!)
+                  child: context.watch<ImageData>().image != null
+                      ? Image.file(context.watch<ImageData>().image!)
                       : Image.asset("images/default_group.png"),
                 ),
               ),
