@@ -7,7 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:messaging_app/services/storage_services.dart';
-import 'package:messaging_app/utils/user_model.dart';
+import 'package:messaging_app/model/user_model.dart';
 
 import 'api.dart';
 
@@ -218,12 +218,17 @@ class AccessServices extends ChangeNotifier {
 
   Future<bool> loginUserFromStorage() async {
     if (await _storage.read(key: 'KEY_USERNAME') != null) {
-      await _auth.signInWithEmailAndPassword(
-        email: await _storage.read(key: 'KEY_USERNAME') ?? '',
-        password: await _storage.read(key: 'KEY_PASSWORD') ?? '',
-      );
-      await loadUserDoc();
-      return true;
+      try {
+        await _auth.signInWithEmailAndPassword(
+          email: await _storage.read(key: 'KEY_USERNAME') ?? '',
+          password: await _storage.read(key: 'KEY_PASSWORD') ?? '',
+        );
+        await loadUserDoc();
+        return true;
+      } on FirebaseAuthException catch(e){
+        debugPrint(e.toString());
+        return false;
+      }
     } else {
       return false;
     }

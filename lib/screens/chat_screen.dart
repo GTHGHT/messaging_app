@@ -30,7 +30,7 @@ class ChatScreen extends StatelessWidget {
                   );
                 }
                 return Image(
-                  image: NetworkImage(snapshot.data ?? "default_profile.png"),
+                  image: NetworkImage(snapshot.data ?? ""),
                   height: 40,
                   width: 40,
                 );
@@ -42,6 +42,8 @@ class ChatScreen extends StatelessWidget {
             style: Theme.of(context).textTheme.titleLarge!.copyWith(
                   color: Theme.of(context).colorScheme.onPrimary,
                 ),
+
+            overflow: TextOverflow.ellipsis,
           ),
           onTap: context.watch<ChatData>().groupModel.isPC
               ? null
@@ -200,17 +202,18 @@ class MessageBubble extends StatelessWidget {
         elevation: 3,
         color: senderUid ==
                 context.select<AccessServices, String>(
-                    (value) => value.userModel.uid)
+                  (value) => value.userModel.uid,
+                )
             ? Colors.lightBlueAccent
             : Colors.lightGreenAccent,
         borderRadius: senderUid ==
                 context.select<AccessServices, String>(
                     (value) => value.userModel.uid)
             ? const BorderRadius.all(Radius.circular(15)).copyWith(
-                topLeft: Radius.zero,
+                topRight: Radius.zero,
               )
             : const BorderRadius.all(Radius.circular(15)).copyWith(
-                topRight: Radius.zero,
+                topLeft: Radius.zero,
               ),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
@@ -218,8 +221,8 @@ class MessageBubble extends StatelessWidget {
             crossAxisAlignment: senderUid ==
                     context.select<AccessServices, String>(
                         (value) => value.userModel.uid)
-                ? CrossAxisAlignment.start
-                : CrossAxisAlignment.end,
+                ? CrossAxisAlignment.end
+                : CrossAxisAlignment.start,
             children: [
               Text(
                 sender,
@@ -228,9 +231,21 @@ class MessageBubble extends StatelessWidget {
                     .bodyMedium!
                     .copyWith(fontWeight: FontWeight.bold),
               ),
-              Text(
-                text,
-                style: Theme.of(context).textTheme.bodyMedium,
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width / 2 + 50,
+                ),
+                child: Text(
+                  text,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  maxLines: 5,
+                  textAlign: senderUid ==
+                          context.select<AccessServices, String>(
+                              (value) => value.userModel.uid)
+                      ? TextAlign.end
+                      : TextAlign.start,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ),
@@ -256,13 +271,13 @@ class MessageBubble extends StatelessWidget {
       mainAxisAlignment: senderUid ==
               context.select<AccessServices, String>(
                   (value) => value.userModel.uid)
-          ? MainAxisAlignment.start
-          : MainAxisAlignment.end,
+          ? MainAxisAlignment.end
+          : MainAxisAlignment.start,
       children: senderUid ==
               context.select<AccessServices, String>(
                   (value) => value.userModel.uid)
-          ? rowChildren
-          : rowChildren.reversed.toList(),
+          ? rowChildren.reversed.toList()
+          : rowChildren,
     );
   }
 }

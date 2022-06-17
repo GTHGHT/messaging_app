@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:messaging_app/utils/chat_data.dart';
+import 'package:messaging_app/utils/group_data.dart';
 import 'package:messaging_app/utils/search_data.dart';
 import 'package:provider/provider.dart';
 
+import '../components/update_bottom_sheet.dart';
 import '../services/storage_services.dart';
+import '../utils/image_data.dart';
 
 class InfoGroupScreen extends StatelessWidget {
   const InfoGroupScreen({Key? key}) : super(key: key);
@@ -14,32 +17,90 @@ class InfoGroupScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Info Group"),
+        actions: [
+          Tooltip(
+            message: "Keluar Grup",
+            child: IconButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('Keluar Grup'),
+                      content:
+                          Text('Apakah Kamu Yakin Ingin Keluar Dari Grup?'),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text('Batal'),
+                        ),
+                        TextButton(
+                          onPressed: () async {
+                            await context
+                                .read<GroupData>()
+                                .exitGroup(context.read<ChatData>().groupId);
+                            Navigator.popUntil(
+                                context, (e) => e.isFirst); // Closes the dialog
+                          },
+                          child: Text('Ya'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                icon: Icon(Icons.exit_to_app)),
+          )
+        ],
       ),
       body: ListView(
         children: [
           SizedBox(
             height: 20,
           ),
-          CircleAvatar(
-            radius: 64,
-            child: ClipOval(
-              child: context.watch<ChatData>().image.isEmpty
-                  ? Image.asset("images/default_group.png")
-                  : FutureBuilder<String>(
-                      future: StorageService.getImageLink(
-                          context.watch<ChatData>().image),
-                      builder: (_, snapshot) {
-                        if (!snapshot.hasData) {
-                          return const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: CircularProgressIndicator(),
+          GestureDetector(
+            onTap: () async {
+              await context.read<ImageData>().showImagePickerDialog(context);
+              context
+                  .read<ChatData>()
+                  .changeGroupImage(context.read<ImageData>().image);
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    if (context.watch<ChatData>().loading) {
+                      return AlertDialog(
+                          title: Text("Mengubah Gambar..."),
+                          content: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircularProgressIndicator(),
+                            ],
+                          ));
+                    } else {
+                      Navigator.pop(context);
+                      return SizedBox();
+                    }
+                  });
+            },
+            child: CircleAvatar(
+              radius: 64,
+              child: ClipOval(
+                child: context.watch<ChatData>().image.isEmpty
+                    ? Image.asset("images/default_group.png")
+                    : FutureBuilder<String>(
+                        future: StorageService.getImageLink(
+                            context.watch<ChatData>().image),
+                        builder: (_, snapshot) {
+                          if (!snapshot.hasData) {
+                            return const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          return Image(
+                            image: NetworkImage(snapshot.data ?? ""),
                           );
-                        }
-                        return Image(
-                          image: NetworkImage(snapshot.data ?? ""),
-                        );
-                      },
-                    ),
+                        },
+                      ),
+              ),
             ),
           ),
           SizedBox(
@@ -49,18 +110,58 @@ class InfoGroupScreen extends StatelessWidget {
             leading: Icon(Icons.text_snippet),
             title: Text("Grup Id"),
             subtitle: Text(context.watch<ChatData>().groupId),
-            trailing: Icon(Icons.edit),
           ),
           ListTile(
             leading: Icon(Icons.groups),
             title: Text("Judul Grup"),
             subtitle: Text(context.watch<ChatData>().title),
             trailing: Icon(Icons.edit),
+            onTap: () => showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              builder: (context) => SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: UpdateBottomSheet(
+                    initialValue: context.watch<ChatData>().title,
+                    title: "Ubah Judul Group",
+                    loading: context.watch<ChatData>().loading,
+                    onPressed: (context, value) async {
+                      await context.read<ChatData>().changeGroupTitle(value);
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ),
+            ),
           ),
           ListTile(
             title: Text("Deskripsi Grup"),
             subtitle: Text(context.watch<ChatData>().groupModel.desc ?? ""),
             trailing: Icon(Icons.edit),
+            onTap: () => showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              builder: (context) => SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: UpdateBottomSheet(
+                    initialValue:
+                        context.watch<ChatData>().groupModel.desc ?? "",
+                    title: "Ubah Deskripsi Grup",
+                    loading: context.watch<ChatData>().loading,
+                    onPressed: (context, value) async {
+                      await context.read<ChatData>().changeGroupDesc(value);
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ),
+            ),
           ),
           Card(
             child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
@@ -90,11 +191,13 @@ class InfoGroupScreen extends StatelessWidget {
                               .toLowerCase()))
                       .map<Widget>(
                         (value) => MemberListTile(
-                            image: value["image"],
-                            name: value["username"],
-                            isAdmin: value.data().containsKey("isAdmin")
-                                ? value["data"]
-                                : false),
+                          image: value["image"],
+                          name: value["username"],
+                          isAdmin: value.data().containsKey("isAdmin")
+                              ? value["isAdmin"]
+                              : false,
+                          onLongPress: context.watch<ChatData>().isAdmin?(){}:null,
+                        ),
                       )
                       .toList()
                     ..insert(
@@ -107,6 +210,11 @@ class InfoGroupScreen extends StatelessWidget {
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                           Expanded(child: SizedBox()),
+                          if (context.watch<ChatData>().isAdmin)
+                            IconButton(
+                              icon: Icon(Icons.add),
+                              onPressed: () {},
+                            ),
                           IconButton(
                             onPressed: () {
                               context.read<SearchData>().showSearchField =
@@ -117,11 +225,6 @@ class InfoGroupScreen extends StatelessWidget {
                                     ? Icons.close
                                     : Icons.search),
                           ),
-                          if (true)
-                            IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () {},
-                            ),
                         ],
                       ),
                     )
@@ -222,7 +325,7 @@ class MemberListTile extends StatelessWidget {
                     decoration: ShapeDecoration(
                       shape: RoundedRectangleBorder(
                         side: BorderSide(
-                          color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                         borderRadius: BorderRadius.circular(10),
                       ),

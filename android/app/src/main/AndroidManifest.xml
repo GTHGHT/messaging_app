@@ -8,7 +8,8 @@
     <application
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:label="messaging_app">
+        android:label="Kongko"
+        android:usesCleartextTraffic="true">
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"

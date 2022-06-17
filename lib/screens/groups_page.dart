@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:messaging_app/utils/chat_data.dart';
 import 'package:messaging_app/utils/group_data.dart';
-import 'package:messaging_app/utils/group_model.dart';
+import 'package:messaging_app/model/group_model.dart';
 import 'package:provider/provider.dart';
 
 import '../components/chats_list_tile.dart';

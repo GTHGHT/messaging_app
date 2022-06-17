@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:messaging_app/utils/group_model.dart';
+import 'package:messaging_app/model/group_model.dart';
 import 'package:messaging_app/utils/image_data.dart';
 import 'package:provider/provider.dart';
 

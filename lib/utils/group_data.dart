@@ -3,17 +3,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:messaging_app/services/api.dart';
 import 'package:messaging_app/services/storage_services.dart';
-import 'package:messaging_app/utils/group_model.dart';
-import 'package:messaging_app/utils/user_model.dart';
+import 'package:messaging_app/model/group_model.dart';
+import 'package:messaging_app/model/user_model.dart';
 import 'dart:io';
 
 class GroupData extends ChangeNotifier {
   GroupModel _groupModel = GroupModel.initial();
   bool loading = false;
 
-  final Api _groupApi = Api(collection: "", doc: "");
+  final Api _groupApi = Api(collection: "groups", doc: "");
   final Api _userApi = Api(collection: "", doc: "");
-  final Api _currentUserApi = Api(collection: "");
+  final Api _currentUserApi = Api(collection: "users");
   static final _auth = FirebaseAuth.instance;
 
   GroupModel get groupModel => _groupModel;
@@ -82,7 +82,7 @@ class GroupData extends ChangeNotifier {
         await Api(
           collection: "groups/${_groupModel.id}/members",
           doc: user.uid,
-        ).setDocument(_userModel.toMapShort());
+        ).setDocument(_userModel.toMapShort()..addAll({'isAdmin': true}));
         await _userApi.setDocument(groupModel.toMapShort());
         loading = false;
         notifyListeners();
@@ -95,18 +95,47 @@ class GroupData extends ChangeNotifier {
     }
   }
 
-  Future<DocumentSnapshot<Map<String, dynamic>>> getGroupInfo() async {
-    markAsLoading();
+  Future<bool> loadGroupInfo(String id) async {
     final user = _auth.currentUser;
     if (user != null) {
-      var doc = await _groupApi.getDocument();
-      loading = false;
-      notifyListeners();
-      return doc;
+      _groupApi.doc = id;
+      final groupInfo = await _groupApi.getDocument();
+      if (groupInfo.exists) {
+        groupModel = GroupModel.fromMap(groupInfo.data() ?? {});
+        return true;
+      } else {
+        groupModel = GroupModel.initial();
+        return false;
+      }
     } else {
-      loading = false;
-      notifyListeners();
-      throw Exception("Anda Belum Login");
+      return false;
+    }
+  }
+
+  Future<void> exitGroup(String id) async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      final groupMembers =
+          await Api(collection: "groups/$id/members").getLimitedCollection(3);
+      final firestore = FirebaseFirestore.instance;
+      final batch = firestore.batch();
+      int counter = 0;
+      if (groupMembers.size <= 1) {
+        final messages = await firestore.collection("groups/$id/messages").get();
+        for (DocumentSnapshot<Map<String, dynamic>> i in messages.docs) {
+          final message = firestore
+              .collection("groups/$id/messages")
+              .doc(i.id);
+          batch.delete(message);
+          if (++counter >= 500) await batch.commit();
+        }
+        await firestore.collection("groups").doc(id).delete();
+      }
+      await firestore.collection("groups/$id/members").doc(user.uid)
+            .delete();
+      await firestore.collection("users/${user.uid}/groups").doc(id)
+          .delete();
+      await batch.commit();
     }
   }
 

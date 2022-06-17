@@ -68,7 +68,7 @@ class UpdateAccountScreen extends StatelessWidget {
                   context: context,
                   isScrollControlled: true,
                   builder: (context) => SingleChildScrollView(
-                    child: Container(
+                    child: Padding(
                       padding: EdgeInsets.only(
                           bottom: MediaQuery.of(context).viewInsets.bottom),
                       child: UpdateBottomSheet(
@@ -100,7 +100,7 @@ class UpdateAccountScreen extends StatelessWidget {
                   context: context,
                   isScrollControlled: true,
                   builder: (context) => SingleChildScrollView(
-                    child: Container(
+                    child: Padding(
                       padding: EdgeInsets.only(
                           bottom: MediaQuery.of(context).viewInsets.bottom),
                       child: UpdateBottomSheet(

@@ -16,6 +16,19 @@ class Api {
       return _firestore.collection(collection).snapshots();
     }
   }
+  Future<QuerySnapshot<Map<String, dynamic>>> getCollection() {
+    return _firestore
+        .collection(collection)
+        .get();
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>> getLimitedCollection(int limit) {
+    return _firestore
+        .collection(collection)
+        .limit(limit)
+        .get();
+  }
+
 
   Future<QuerySnapshot<Map<String, dynamic>>> searchDocument(
       String field, Object value) {
@@ -49,7 +62,7 @@ class Api {
     return _firestore.collection(collection).doc(doc).set(data);
   }
 
-  Future<void> removeDocument() {
+  Future<void> deleteDocument() {
     return _firestore.collection(collection).doc(doc).delete();
   }
 }

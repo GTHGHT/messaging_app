@@ -45,6 +45,7 @@ class ChatsListTile extends StatelessWidget {
             .of(context)
             .textTheme
             .bodyLarge,
+        overflow: TextOverflow.ellipsis,
       ),
       trailing:trailing,
       subtitle: subtitle,

@@ -1,18 +1,29 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:messaging_app/services/api.dart';
-import 'package:messaging_app/utils/group_model.dart';
-import 'package:messaging_app/utils/user_model.dart';
+import 'package:messaging_app/model/user_model.dart';
+
+import '../services/storage_services.dart';
+import '../model/group_model.dart';
 
 class ChatData extends ChangeNotifier {
   GroupModel _groupModel = GroupModel.initial();
   UserModel _currentUserModel = UserModel.initial();
+  bool _isAdmin = false;
+
   String _messageText = "";
   bool loading = false;
 
   Api api = Api(collection: "");
   final _auth = FirebaseAuth.instance;
+
+  showLoading(bool value) {
+    loading = value;
+    notifyListeners();
+  }
 
   void send() async {
     loading = true;
@@ -50,8 +61,81 @@ class ChatData extends ChangeNotifier {
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getGroupMembers() {
-    return Api(collection: "groups/${_groupModel.id}/members").streamCollection();
+    return Api(collection: "groups/${_groupModel.id}/members")
+        .streamCollection();
   }
+
+  Future<void> changeGroupImage(File? newImage) async {
+    if (newImage == null) return;
+
+    try {
+      showLoading(true);
+      final firestore = FirebaseFirestore.instance;
+      final groupMembers =
+          await firestore.collection("groups/${_groupModel.id}/members").get();
+      final location =
+          await StorageService.uploadFile(newImage, "group_picture/");
+      if (_groupModel.image != "default_group.png") {
+        await StorageService.delete(_groupModel.image);
+      }
+      int counter = 0;
+      final batch = firestore.batch();
+      for (DocumentSnapshot<Map<String, dynamic>> i in groupMembers.docs) {
+        final groupMember = firestore
+            .collection("users/${i['uid']}/groups")
+            .doc(_groupModel.id);
+        batch.update(groupMember, {'image': location});
+        if (++counter >= 500) await batch.commit();
+      }
+      await Api(collection: "groups", doc: _groupModel.id)
+          .updateDocument({'image': location});
+      await batch.commit();
+      _groupModel.image = location;
+      showLoading(false);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> changeGroupTitle(String newTitle) async {
+    final firestore = FirebaseFirestore.instance;
+    final groupMembers =
+        await firestore.collection("groups/${_groupModel.id}/members").get();
+    if (groupMembers.size > 0 && newTitle != _groupModel.title) {
+      showLoading(true);
+      int counter = 0;
+      final batch = firestore.batch();
+      for (DocumentSnapshot<Map<String, dynamic>> i in groupMembers.docs) {
+        final groupMember = firestore
+            .collection("users/${i['uid']}/groups")
+            .doc(_groupModel.id);
+        batch.update(groupMember, {'title': newTitle});
+        if (++counter >= 500) await batch.commit();
+      }
+      await firestore.collection("groups").doc(_groupModel.id).update({
+        'title': newTitle,
+      });
+      await batch.commit();
+      _groupModel.title = newTitle;
+      showLoading(false);
+    }
+  }
+
+  Future<void> changeGroupDesc(String newDesc) async {
+    if (_groupModel.desc != newDesc) {
+      await Api(collection: "groups", doc: _groupModel.id)
+          .updateDocument({'desc': newDesc});
+      _groupModel.desc = newDesc;
+      notifyListeners();
+    }
+  }
+
+  bool get isAdmin => _isAdmin;
+
+  set isAdmin(bool value) {
+    _isAdmin = value;
+  }
+
 
 
   set messageText(String value) {

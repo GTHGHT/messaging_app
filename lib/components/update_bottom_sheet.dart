@@ -71,6 +71,9 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet> {
             height: 10,
           ),
           TextField(
+            decoration: InputDecoration(contentPadding: EdgeInsets.all(8)),
+            minLines: 1,
+            maxLines: 6,
             controller: valueController,
             autofocus: true,
             textAlign: TextAlign.center,

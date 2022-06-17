@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../components/chats_list_tile.dart';
 import '../utils/chat_data.dart';
-import '../utils/group_model.dart';
+import '../model/group_model.dart';
 
 class PersonalChatsPage extends StatelessWidget {
   const PersonalChatsPage({Key? key}) : super(key: key);
