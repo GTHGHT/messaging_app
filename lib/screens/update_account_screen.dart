@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:messaging_app/services/access_services.dart';
 import 'package:provider/provider.dart';
 
+import '../components/update_bottom_sheet.dart';
 import '../services/storage_services.dart';
 import '../utils/bottom_nav_bar_data.dart';
 import '../utils/image_data.dart';
@@ -70,7 +71,20 @@ class UpdateAccountScreen extends StatelessWidget {
                     child: Container(
                       padding: EdgeInsets.only(
                           bottom: MediaQuery.of(context).viewInsets.bottom),
-                      child: updateNameScreen(),
+                      child: UpdateBottomSheet(
+                        initialValue:
+                            context.read<AccessServices>().userModel.username,
+                        loading: context.watch<AccessServices>().loading,
+                        title: 'Ubah Nama',
+                        onPressed: (ctx, value) async {
+                          if (value.isNotEmpty) {
+                            await ctx
+                                .read<AccessServices>()
+                                .changeUsername(value);
+                          }
+                          Navigator.pop(ctx);
+                        },
+                      ),
                     ),
                   ),
                 );
@@ -89,7 +103,32 @@ class UpdateAccountScreen extends StatelessWidget {
                     child: Container(
                       padding: EdgeInsets.only(
                           bottom: MediaQuery.of(context).viewInsets.bottom),
-                      child: updateEmailScreen(),
+                      child: UpdateBottomSheet(
+                        loading: context.watch<AccessServices>().loading,
+                        title: "Ubah Email",
+                        initialValue:
+                            context.read<AccessServices>().userModel.email,
+                        onPressed: (ctx, value) async {
+                          if (value.isNotEmpty &&
+                              RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                  .hasMatch(value)) {
+                            value = value.toLowerCase();
+                            await ctx.read<AccessServices>().changeEmail(value);
+                            Navigator.pushNamedAndRemoveUntil(
+                                ctx, '/landing', (_) => false);
+                            ctx.read<BottomNavBarData>().currentIndex = 0;
+                            ScaffoldMessenger.of(ctx).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  "Perubahan Email Berhasil, Silahkan Login Ulang",
+                                ),
+                              ),
+                            );
+                          } else {
+                            Navigator.pop(context);
+                          }
+                        },
+                      ),
                     ),
                   ),
                 );
@@ -97,191 +136,6 @@ class UpdateAccountScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class updateNameScreen extends StatefulWidget {
-  @override
-  State<updateNameScreen> createState() => _updateNameScreenState();
-}
-
-class _updateNameScreenState extends State<updateNameScreen> {
-  final valueController = TextEditingController();
-
-  @override
-  initState() {
-    super.initState();
-    valueController.text = context.read<AccessServices>().userModel.username;
-  }
-
-  @override
-  dispose() {
-    super.dispose();
-    valueController.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final ubahButton = context.watch<AccessServices>().loading
-        ? SizedBox(
-            key: ValueKey(1),
-            height: 52.0,
-            width: 52.0,
-            child: CircularProgressIndicator(
-              strokeWidth: 6,
-            ),
-          )
-        : SizedBox(
-            key: ValueKey(2),
-            width: MediaQuery.of(context).size.width,
-            child: ElevatedButton(
-              child: Text(
-                'Ubah',
-              ),
-              onPressed: () async {
-                if (valueController.text.isNotEmpty) {
-                  await context
-                      .read<AccessServices>()
-                      .changeUsername(valueController.text);
-                }
-                Navigator.pop(context);
-              },
-            ),
-          );
-    return Padding(
-      padding: EdgeInsets.all(20.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Text(
-            'Ubah Nama',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          TextField(
-            controller: valueController,
-            autofocus: true,
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          AnimatedSwitcher(
-            duration: Duration(milliseconds: 200),
-            child: ubahButton,
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(primary: Colors.red),
-            onPressed: () => Navigator.pop(context),
-            child: Text("Batalkan"),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class updateEmailScreen extends StatefulWidget {
-  @override
-  State<updateEmailScreen> createState() => _updateEmailScreenState();
-}
-
-class _updateEmailScreenState extends State<updateEmailScreen> {
-  final valueController = TextEditingController();
-
-  @override
-  initState() {
-    super.initState();
-    valueController.text = context.read<AccessServices>().userModel.email;
-  }
-
-  @override
-  dispose() {
-    super.dispose();
-    valueController.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final ubahButton = context.watch<AccessServices>().loading
-        ? SizedBox(
-            key: ValueKey(1),
-            height: 52.0,
-            width: 52.0,
-            child: CircularProgressIndicator(
-              strokeWidth: 6,
-            ),
-          )
-        : SizedBox(
-            key: ValueKey(2),
-            width: MediaQuery.of(context).size.width,
-            child: ElevatedButton(
-              child: Text(
-                'Ubah',
-              ),
-              onPressed: () async {
-                if (valueController.text.isNotEmpty &&
-                    RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                        .hasMatch(valueController.text)) {
-                  await context
-                      .read<AccessServices>()
-                      .changeEmail(valueController.text);
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, '/landing', (_) => false);
-                  context.read<BottomNavBarData>().currentIndex = 0;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        "Perubahan Email Berhasil, Silahkan Login Ulang",
-                      ),
-                    ),
-                  );
-                } else {
-                  Navigator.pop(context);
-                }
-              },
-            ),
-          );
-    return Padding(
-      padding: EdgeInsets.all(20.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Text(
-            'Ubah Email',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          TextField(
-            controller: valueController,
-            autofocus: true,
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          AnimatedSwitcher(
-              duration: Duration(milliseconds: 200), child: ubahButton),
-          SizedBox(
-            height: 10,
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(primary: Colors.red),
-            onPressed: () => Navigator.pop(context),
-            child: Text("Batalkan"),
-          ),
-        ],
       ),
     );
   }

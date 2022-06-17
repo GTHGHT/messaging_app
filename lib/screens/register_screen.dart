@@ -33,11 +33,13 @@ class _RegisterScreensState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     final registerButton = context.watch<AccessServices>().loading
         ? SizedBox(
+      key: ValueKey(1),
             height: 52.0,
             width: 52.0,
             child: const CircularProgressIndicator(),
           )
         : SizedBox(
+      key: ValueKey(2),
             width: MediaQuery.of(context).size.width / 2,
             child: ElevatedButton(
               onPressed: () {

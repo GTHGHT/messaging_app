@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,7 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:messaging_app/services/storage_services.dart';
-import 'package:messaging_app/utils/member_model.dart';
+import 'package:messaging_app/utils/user_model.dart';
 
 import 'api.dart';
 
@@ -16,9 +15,9 @@ class AccessServices extends ChangeNotifier {
   bool loading = false;
   final _auth = FirebaseAuth.instance;
   final _storage = const FlutterSecureStorage();
-  MemberModel _userModel = MemberModel.initial();
+  UserModel _userModel = UserModel.initial();
 
-  MemberModel get userModel => _userModel;
+  UserModel get userModel => _userModel;
 
   void showLoading(bool value) {
     loading = value;
@@ -122,10 +121,10 @@ class AccessServices extends ChangeNotifier {
             .updateDocument({'email': newEmail});
         logout();
       }
-      showLoading(false);
     } catch (e) {
       debugPrint(e.toString());
     }
+    showLoading(false);
   }
 
   Future<bool> register({
@@ -164,7 +163,7 @@ class AccessServices extends ChangeNotifier {
         username: username.text,
         email: email.text,
       );
-      _userModel = MemberModel(
+      _userModel = UserModel(
         uid: _auth.currentUser!.uid,
         username: username.text,
         image: "default_profile.png",
@@ -173,7 +172,6 @@ class AccessServices extends ChangeNotifier {
       await _storage.write(key: "KEY_USERNAME", value: email.text);
       await _storage.write(key: "KEY_PASSWORD", value: password.text);
       showSnackBar("Berhasil Registrasi");
-      showLoading(false);
       return true;
     } on FirebaseAuthException catch (e) {
       if (e.code == "email-already-in-use") {
@@ -210,7 +208,7 @@ class AccessServices extends ChangeNotifier {
       collection: 'users',
       doc: _auth.currentUser!.uid,
     ).getDocument();
-    _userModel = MemberModel(
+    _userModel = UserModel(
       uid: _auth.currentUser!.uid,
       username: userRef["username"],
       image: userRef["image"],
@@ -251,7 +249,6 @@ class AccessServices extends ChangeNotifier {
       await _storage.write(key: "KEY_USERNAME", value: email.text);
       await _storage.write(key: "KEY_PASSWORD", value: password.text);
       showSnackBar("Berhasil Login");
-      showLoading(false);
       return true;
     } on FirebaseAuthException catch (e) {
       if (e.code == "user-not-found") {
@@ -271,7 +268,7 @@ class AccessServices extends ChangeNotifier {
 
   void logout() {
     _auth.signOut();
-    _userModel = MemberModel.initial();
+    _userModel = UserModel.initial();
     _storage.deleteAll().ignore();
     notifyListeners();
   }

@@ -6,6 +6,7 @@ import 'package:messaging_app/utils/chat_data.dart';
 import 'package:provider/provider.dart';
 
 import '../services/storage_services.dart';
+import '../utils/search_data.dart';
 
 class ChatScreen extends StatelessWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -42,10 +43,13 @@ class ChatScreen extends StatelessWidget {
                   color: Theme.of(context).colorScheme.onPrimary,
                 ),
           ),
-          onTap: () {
-            context.read<ChatData>().loadDesc();
-            Navigator.of(context).pushNamed("/chat/info");
-          },
+          onTap: context.watch<ChatData>().groupModel.isPC
+              ? null
+              : () async {
+                  context.read<SearchData>().clearSearch();
+                  await context.read<ChatData>().loadDesc();
+                  Navigator.of(context).pushNamed("/chat/info");
+                },
         ),
       ),
       body: Column(

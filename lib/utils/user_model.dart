@@ -1,18 +1,18 @@
-class MemberModel{
+class UserModel{
   final String uid;
   String username;
   String image;
   String email;
 
-  MemberModel({
+  UserModel({
     required this.uid,
     required this.username,
     required this.image,
     required this.email,
   });
 
-  factory MemberModel.fromMap(Map<String, dynamic> data){
-    return MemberModel(
+  factory UserModel.fromMap(Map<String, dynamic> data){
+    return UserModel(
       uid: data['uid'],
       username: data['username'],
       image: data['image'],
@@ -37,8 +37,8 @@ class MemberModel{
     };
   }
 
-  factory MemberModel.initial() {
-    return MemberModel(
+  factory UserModel.initial() {
+    return UserModel(
       uid: '',
       username: '',
       image: '',

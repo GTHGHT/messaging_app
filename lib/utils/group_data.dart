@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:messaging_app/services/api.dart';
 import 'package:messaging_app/services/storage_services.dart';
 import 'package:messaging_app/utils/group_model.dart';
-import 'package:messaging_app/utils/member_model.dart';
+import 'package:messaging_app/utils/user_model.dart';
 import 'dart:io';
 
 class GroupData extends ChangeNotifier {
@@ -27,7 +27,7 @@ class GroupData extends ChangeNotifier {
     notifyListeners();
   }
 
-  clearModel(){
+  clearModel() {
     _groupModel = GroupModel.initial();
   }
 
@@ -39,12 +39,12 @@ class GroupData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void markAsLoading(){
+  void markAsLoading() {
     loading = true;
     notifyListeners();
   }
 
-  void loadUser(){
+  void loadUser() {
     _userApi.collection = "users/${_auth.currentUser!.uid}/groups";
     _currentUserApi.collection = "users";
     _currentUserApi.doc = _auth.currentUser!.uid;
@@ -69,15 +69,16 @@ class GroupData extends ChangeNotifier {
         notifyListeners();
         return false;
       } else {
-        if(groupImage != null){
-          final location = await StorageService.uploadFile(groupImage, "group_picture/");
+        if (groupImage != null) {
+          final location =
+              await StorageService.uploadFile(groupImage, "group_picture/");
           groupModel.image = location;
         } else {
           groupModel.image = "default_group.png";
         }
         await _groupApi.setDocument(groupModel.toMap());
         final _userDoc = await _currentUserApi.getDocument();
-        final _userModel = MemberModel.fromMap(_userDoc.data() ?? {});
+        final _userModel = UserModel.fromMap(_userDoc.data() ?? {});
         await Api(
           collection: "groups/${_groupModel.id}/members",
           doc: user.uid,
@@ -119,7 +120,7 @@ class GroupData extends ChangeNotifier {
       }
       await _userApi.setDocument(groupModel.toMapShort());
       final _userDoc = await _currentUserApi.getDocument();
-      final _userModel = MemberModel.fromMap(_userDoc.data() ?? {});
+      final _userModel = UserModel.fromMap(_userDoc.data() ?? {});
       await Api(collection: "groups/${groupModel.id}/members", doc: user.uid)
           .setDocument(_userModel.toMapShort());
     }

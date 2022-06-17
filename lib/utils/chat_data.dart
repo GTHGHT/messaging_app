@@ -3,11 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:messaging_app/services/api.dart';
 import 'package:messaging_app/utils/group_model.dart';
-import 'package:messaging_app/utils/member_model.dart';
+import 'package:messaging_app/utils/user_model.dart';
 
 class ChatData extends ChangeNotifier {
   GroupModel _groupModel = GroupModel.initial();
-  MemberModel _currentUserModel = MemberModel.initial();
+  UserModel _currentUserModel = UserModel.initial();
   String _messageText = "";
   bool loading = false;
 
@@ -33,7 +33,7 @@ class ChatData extends ChangeNotifier {
   }
 
   Future<void> loadDesc() async {
-    if (_groupModel.desc != null) {
+    if (_groupModel.desc == null) {
       _groupModel.desc = await Api(collection: "groups", doc: _groupModel.id)
           .getDocument()
           .then((value) => value.data()!["desc"]);
@@ -46,8 +46,13 @@ class ChatData extends ChangeNotifier {
         await Api(collection: "users", doc: _auth.currentUser!.uid)
             .getDocument();
     _currentUserModel =
-        MemberModel.fromMap(_currentUserDoc.data() as Map<String, dynamic>);
+        UserModel.fromMap(_currentUserDoc.data() as Map<String, dynamic>);
   }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getGroupMembers() {
+    return Api(collection: "groups/${_groupModel.id}/members").streamCollection();
+  }
+
 
   set messageText(String value) {
     _messageText = value;

@@ -27,9 +27,10 @@ class _LoginScreensState extends State<LoginScreens> {
   @override
   Widget build(BuildContext context) {
     final loginButton = context.watch<AccessServices>().loading
-        ? SizedBox(height: 52.0,
+        ? SizedBox(key: ValueKey(2),height: 52.0,
         width: 52.0,child: const CircularProgressIndicator())
         : SizedBox(
+      key: ValueKey(2),
             width: MediaQuery.of(context).size.width / 2,
             child: ElevatedButton(
               onPressed: () {

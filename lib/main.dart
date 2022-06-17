@@ -14,6 +14,7 @@ import 'package:messaging_app/utils/bottom_nav_bar_data.dart';
 import 'package:messaging_app/utils/chat_data.dart';
 import 'package:messaging_app/utils/group_data.dart';
 import 'package:messaging_app/utils/image_data.dart';
+import 'package:messaging_app/utils/search_data.dart';
 import 'utils/theme_mode_data.dart';
 import 'package:provider/provider.dart';
 
@@ -89,6 +90,9 @@ class Kongko extends StatelessWidget {
         ),
         ChangeNotifierProvider<ThemeModeData>(
           create: (_) => ThemeModeData(),
+        ),
+        ChangeNotifierProvider<SearchData>(
+          create: (_) => SearchData(),
         ),
       ],
       child: Builder(builder: (context) {
