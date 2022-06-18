@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../components/chats_list_tile.dart';
 import '../utils/chat_data.dart';
 import '../model/group_model.dart';
+import '../utils/search_data.dart';
 
 class PersonalChatsPage extends StatelessWidget {
   const PersonalChatsPage({Key? key}) : super(key: key);
@@ -50,6 +51,7 @@ class PersonalChatsPage extends StatelessWidget {
                           isPC: true,
                         );
                         context.read<ChatData>().pcUid = pcData['uid'];
+                        context.read<SearchData>().clearSearch();
                         Navigator.of(context).pushNamed("/chat");
                       },
                     );

@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../components/chats_list_tile.dart';
 import '../services/access_services.dart';
+import '../utils/search_data.dart';
 
 class GroupsPage extends StatelessWidget {
   const GroupsPage({Key? key}) : super(key: key);
@@ -40,6 +41,7 @@ class GroupsPage extends StatelessWidget {
               onTap: () {
                 context.read<ChatData>().groupModel =
                     GroupModel.fromMap(groupData);
+                context.read<SearchData>().clearSearch();
                 Navigator.of(context).pushNamed("/chat");
               },
             );

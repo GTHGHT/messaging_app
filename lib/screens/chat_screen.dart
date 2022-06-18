@@ -16,47 +16,14 @@ class ChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: ClipOval(
-            child: FutureBuilder<String>(
-              future: StorageService.getImageLink(
-                context.select<ChatData, String>((value) => value.image),
-              ),
-              builder: (_, snapshot) {
-                if (!snapshot.hasData) {
-                  return const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                return Image(
-                  image: NetworkImage(snapshot.data ?? ""),
-                  height: 40,
-                  width: 40,
-                );
+        title: buildAppBarTitle(context),
+        actions: [
+          IconButton(
+              onPressed: () {
+                context.read<SearchData>().toggleSearchField();
               },
-            ),
-          ),
-          title: Text(
-            context.select<ChatData, String>((value) => value.title),
-            style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                ),
-
-            overflow: TextOverflow.ellipsis,
-          ),
-          onTap: context.watch<ChatData>().groupModel.isPC
-              ? () async {
-            await context.read<ShowAccountData>().loadUserModel(context.read<ChatData>().pcUid);
-            Navigator.pushNamed(context, "/show_account");
-          }
-              : () async {
-                  context.read<SearchData>().clearSearch();
-                  await context.read<ChatData>().loadDesc();
-                  Navigator.of(context).pushNamed("/chat/info");
-                },
-        ),
+              icon: Icon(Icons.search))
+        ],
       ),
       body: Column(
         children: [
@@ -72,7 +39,10 @@ class ChatScreen extends StatelessWidget {
                     child: CircularProgressIndicator(),
                   );
                 }
-                final messages = snapshot.data!.docs.reversed.toList();
+                final messages = snapshot.data!.docs.reversed
+                    .where((e) => e['text'].toString().toLowerCase().contains(
+                        context.read<SearchData>().searchTerm.toLowerCase()))
+                    .toList();
                 if (messages.isEmpty) {
                   return defaultEmptyReturn;
                 }
@@ -102,6 +72,62 @@ class ChatScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget buildAppBarTitle(BuildContext context) {
+    return context.watch<SearchData>().showSearchField
+        ? TextField(
+            autofocus: true,
+            showCursor: true,
+            onChanged: (value) {
+              context.read<SearchData>().searchTerm = value;
+            },
+            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
+          )
+        : ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: ClipOval(
+              child: FutureBuilder<String>(
+                future: StorageService.getImageLink(
+                  context.select<ChatData, String>((value) => value.image),
+                ),
+                builder: (_, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  return Image(
+                    image: NetworkImage(snapshot.data ?? ""),
+                    height: 40,
+                    width: 40,
+                  );
+                },
+              ),
+            ),
+            title: Text(
+              context.select<ChatData, String>((value) => value.title),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+              overflow: TextOverflow.ellipsis,
+            ),
+            onTap: context.watch<ChatData>().groupModel.isPC
+                ? () async {
+                    await context
+                        .read<ShowAccountData>()
+                        .loadUserModel(context.read<ChatData>().pcUid);
+                    Navigator.pushNamed(context, "/show_account");
+                  }
+                : () async {
+                    context.read<SearchData>().clearSearch();
+                    await context.read<ChatData>().loadDesc();
+                    Navigator.of(context).pushNamed("/chat/info");
+                  },
+          );
   }
 }
 

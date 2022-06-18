@@ -227,8 +227,7 @@ class InfoGroupScreen extends StatelessWidget {
                       ),
                     IconButton(
                       onPressed: () {
-                        context.read<SearchData>().showSearchField =
-                            !context.read<SearchData>().showSearchField;
+                        context.read<SearchData>().toggleSearchField();
                       },
                       icon: Icon(context.watch<SearchData>().showSearchField
                           ? Icons.close

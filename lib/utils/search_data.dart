@@ -6,6 +6,14 @@ class SearchData extends ChangeNotifier{
 
   bool get showSearchField => _showSearchField;
 
+  void toggleSearchField(){
+    _showSearchField = !_showSearchField;
+    if(_showSearchField){
+      _searchTerm = "";
+    }
+    notifyListeners();
+  }
+
   set showSearchField(bool value) {
     _showSearchField = value;
     notifyListeners();
