@@ -49,8 +49,13 @@ class ChatData extends ChangeNotifier {
       _groupModel.desc = await Api(collection: "groups", doc: _groupModel.id)
           .getDocument()
           .then((value) => value.data()!["desc"]);
-      notifyListeners();
     }
+    isAdmin = await Api(
+      collection: "groups/${_groupModel.id}/members",
+      doc: _auth.currentUser!.uid,
+    ).getDocument().then((value) =>
+        value.data()!.containsKey("isAdmin") ? value["isAdmin"] : false);
+    notifyListeners();
   }
 
   loadUser() async {
@@ -131,13 +136,32 @@ class ChatData extends ChangeNotifier {
     }
   }
 
+  Future<void> changeAdminStatus(String uid, bool isAdmin) async {
+    if (isAdmin) {
+      await Api(
+        collection: "groups/${_groupModel.id}/members",
+        doc: uid,
+      ).updateDocument({'isAdmin': isAdmin});
+    }
+  }
+
+  Future<void> kickMember(String uid) async{
+    if(isAdmin){
+      await Api(
+          collection: "groups/${_groupModel.id}/members",
+          doc: uid,
+      ).deleteDocument();
+      await Api(
+        collection: "users/$uid/groups", doc:  _groupModel.id
+      ).deleteDocument();
+    }
+  }
+
   bool get isAdmin => _isAdmin;
 
   set isAdmin(bool value) {
     _isAdmin = value;
   }
-
-
 
   set messageText(String value) {
     _messageText = value;

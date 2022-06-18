@@ -21,6 +21,9 @@ class PersonalChatData extends ChangeNotifier {
       throw Exception("Gagal Menerima Daftar Personal Chat");
     }
   }
+  Future<Map<String, dynamic>> getPersonalChat(String uid) async {
+    return await Api(collection: "groups", doc: uid).getDocument().then((value) => value.data()??{});
+  }
 
   void markAsLoading() {
     loading = true;
@@ -51,7 +54,53 @@ class PersonalChatData extends ChangeNotifier {
     }
   }
 
-  createPersonalChat() async {
+  // Future<void> loadFriendFromId(String uid) async {
+  //   _globalUserApi.doc = uid;
+  //   friendModel = UserModel.fromMap(
+  //     await _globalUserApi.getDocument().then(
+  //           (value) => value.data() ?? {},
+  //         ),
+  //   );
+  // }
+  //
+  // Future<String> gotoPersonalChat() async{
+  //   final user = _auth.currentUser;
+  //   if (user != null) {
+  //     markAsLoading();
+  //     _globalUserApi.doc = user.uid;
+  //     _friendApi.doc = user.uid;
+  //     _currentUserApi.doc = friendModel.uid;
+  //     final personalChat = await _currentUserApi.getDocument();
+  //     if (personalChat.exists) {
+  //       loading = false;
+  //       notifyListeners();
+  //       return personalChat['id'];
+  //     }
+  //     final userDoc = await _globalUserApi.getDocument();
+  //     final userModel = UserModel.fromMap(userDoc.data() ?? {});
+  //     final pcId = await Api(collection: "groups").addDocumentWithId({
+  //       'type': 2,
+  //     });
+  //     await _friendApi.setDocument(
+  //       userModel.toMapShort()..addAll({'id': pcId}),
+  //     );
+  //     await _currentUserApi.setDocument(
+  //       friendModel.toMapShort()..addAll({'id': pcId}),
+  //     );
+  //     final memberApi = Api(collection: "groups/$pcId/members");
+  //     memberApi.doc = userModel.uid;
+  //     await memberApi.setDocument(userModel.toMapShort());
+  //     memberApi.doc = friendModel.uid;
+  //     await memberApi.setDocument(friendModel.toMapShort());
+  //     _friendModel = UserModel.initial();
+  //     loading = false;
+  //     notifyListeners();
+  //     return pcId;
+  //   }
+  //   throw Exception("Belum Login");
+  // }
+
+  Future<void> createPersonalChat() async {
     markAsLoading();
     final user = _auth.currentUser;
     if (user != null) {
@@ -62,7 +111,7 @@ class PersonalChatData extends ChangeNotifier {
       if (personalChat.exists) {
         loading = false;
         notifyListeners();
-        throw Exception("Personal Chat Sudah Ada");
+        throw Exception(personalChat['id']);
       }
       final userDoc = await _globalUserApi.getDocument();
       final userModel = UserModel.fromMap(userDoc.data() ?? {});
@@ -86,7 +135,7 @@ class PersonalChatData extends ChangeNotifier {
     notifyListeners();
   }
 
-  clearModel(){
+  clearModel() {
     _friendModel = UserModel.initial();
   }
 
