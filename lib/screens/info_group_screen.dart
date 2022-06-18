@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:messaging_app/utils/chat_data.dart';
 import 'package:messaging_app/utils/group_data.dart';
 import 'package:messaging_app/utils/search_data.dart';
+import 'package:messaging_app/utils/show_account_data.dart';
 import 'package:provider/provider.dart';
 
 import '../components/update_bottom_sheet.dart';
@@ -196,6 +197,10 @@ class InfoGroupScreen extends StatelessWidget {
                           isAdmin: value.data().containsKey("isAdmin")
                               ? value["isAdmin"]
                               : false,
+                          onTap: () async{
+                            await context.read<ShowAccountData>().loadUserModel(value['uid']);
+                            Navigator.pushNamed(context, '/show_account');
+                          },
                           onLongPress: context.watch<ChatData>().isAdmin?(){}:null,
                         ),
                       )

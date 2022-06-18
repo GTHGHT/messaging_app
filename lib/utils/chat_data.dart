@@ -13,6 +13,7 @@ class ChatData extends ChangeNotifier {
   GroupModel _groupModel = GroupModel.initial();
   UserModel _currentUserModel = UserModel.initial();
   bool _isAdmin = false;
+  String pcUid = "";
 
   String _messageText = "";
   bool loading = false;

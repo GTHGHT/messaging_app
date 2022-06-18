@@ -15,6 +15,8 @@ import 'package:messaging_app/utils/chat_data.dart';
 import 'package:messaging_app/utils/group_data.dart';
 import 'package:messaging_app/utils/image_data.dart';
 import 'package:messaging_app/utils/search_data.dart';
+import 'package:messaging_app/utils/show_account_data.dart';
+import 'screens/show_account_screen.dart';
 import 'utils/theme_mode_data.dart';
 import 'package:provider/provider.dart';
 
@@ -93,6 +95,9 @@ class Kongko extends StatelessWidget {
         ),
         ChangeNotifierProvider<SearchData>(
           create: (_) => SearchData(),
+        ),
+        ChangeNotifierProvider<ShowAccountData>(
+          create: (_) => ShowAccountData(),
         ),
       ],
       child: Builder(builder: (context) {
@@ -189,6 +194,7 @@ class Kongko extends StatelessWidget {
             "/change_theme_mode": (_) => const ThemeModeScreen(),
             "/update_account": (_) => const UpdateAccountScreen(),
             "/chat/info": (_) => const InfoGroupScreen(),
+            "/show_account": (_) => const ShowAccountScreen(),
           },
           initialRoute: "/",
         );

@@ -29,7 +29,7 @@ class AccessServices extends ChangeNotifier {
 
     try{
       final location = await StorageService.uploadFile(newImage, "profile_picture/");
-      if(_userModel.image != "defaul_profile.png") await StorageService.delete(_userModel.image);
+      if(_userModel.image != "default_profile.png") await StorageService.delete(_userModel.image);
       await Api(collection: "users", doc: _userModel.uid).updateDocument({'image': location});
       _userModel.image = location;
       notifyListeners();

@@ -49,6 +49,7 @@ class PersonalChatsPage extends StatelessWidget {
                           image: pcData['image'],
                           isPC: true,
                         );
+                        context.read<ChatData>().pcUid = pcData['uid'];
                         Navigator.of(context).pushNamed("/chat");
                       },
                     );

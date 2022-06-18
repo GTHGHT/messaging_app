@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:messaging_app/services/access_services.dart';
 import 'package:messaging_app/utils/chat_data.dart';
+import 'package:messaging_app/utils/show_account_data.dart';
 import 'package:provider/provider.dart';
 
 import '../services/storage_services.dart';
@@ -46,7 +47,10 @@ class ChatScreen extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
           onTap: context.watch<ChatData>().groupModel.isPC
-              ? null
+              ? () async {
+            await context.read<ShowAccountData>().loadUserModel(context.read<ChatData>().pcUid);
+            Navigator.pushNamed(context, "/show_account");
+          }
               : () async {
                   context.read<SearchData>().clearSearch();
                   await context.read<ChatData>().loadDesc();
