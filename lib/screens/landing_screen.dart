@@ -50,7 +50,7 @@ class LandingScreen extends StatelessWidget {
       },
       pages: [
         PageViewModel(
-          title: "Hello Guysss!!! Selamat Datang Di Aplikasi Kongko",
+          title: "Hallo, Selamat Datang Di Aplikasi Kongko",
           body:
               "Aplikasi pesan online karya anak bangsa yang bisa diakses kapanpun dan dimanapun.",
           image: Theme.of(context).brightness == Brightness.light
@@ -60,8 +60,8 @@ class LandingScreen extends StatelessWidget {
         ),
         // TODO: Ubah Title Sama Bodynya
         PageViewModel(
-          title: "Mudah",
-          body: "Menghubungkan Yang Jauh, Memutuskan Yang Dekat.",
+          title: "Simpel",
+          body: "Sederhana dan mudah untuk Anda gunakan.",
           image: Theme.of(context).brightness == Brightness.light
               ? Image.asset("images/landing_one.png")
               : Image.asset("images/landing_one_b.png"),
@@ -69,8 +69,8 @@ class LandingScreen extends StatelessWidget {
         ),
         // TODO: Ubah Title Sama Bodynya
         PageViewModel(
-          title: "Dekat",
-          body: "Menghubungkan Yang Jauh, Memutuskan Yang Dekat.",
+          title: "Cepat",
+          body: "Mengirim pesan lebih cepat dari aplikasi lain.",
           image: Theme.of(context).brightness == Brightness.light
               ? Image.asset("images/landing_two.png")
               : Image.asset("images/landing_two_b.png"),
@@ -78,8 +78,9 @@ class LandingScreen extends StatelessWidget {
         ),
         // TODO: Ubah Title Sama Bodynya
         PageViewModel(
-          title: "Cepat",
-          body: "Menghubungkan Yang Jauh, Memutuskan Yang Dekat.",
+          title: "Memiliki Fitur Unik",
+          body:
+              "Kirim pesan ke siapapun tanpa menyimpan nomor terlebih dahulu.",
           image: Theme.of(context).brightness == Brightness.light
               ? Image.asset("images/landing_three.png")
               : Image.asset("images/landing_three_b.png"),
@@ -87,6 +88,7 @@ class LandingScreen extends StatelessWidget {
         ),
       ],
     );
+
     // return Scaffold(
     //   body: SafeArea(
     //     child: ConstrainedBox(
