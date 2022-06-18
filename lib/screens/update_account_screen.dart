@@ -26,9 +26,27 @@ class UpdateAccountScreen extends StatelessWidget {
             GestureDetector(
               onTap: () async {
                 await context.read<ImageData>().showImagePickerDialog(context);
-                await context
+                context
                     .read<AccessServices>()
                     .changeImage(context.read<ImageData>().image);
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      if (context.watch<AccessServices>().loading) {
+                        return AlertDialog(
+                          title: Text("Mengubah Gambar..."),
+                          content: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircularProgressIndicator(),
+                            ],
+                          ),
+                        );
+                      } else {
+                        Navigator.pop(context);
+                        return SizedBox();
+                      }
+                    });
               },
               child: CircleAvatar(
                 radius: 64,

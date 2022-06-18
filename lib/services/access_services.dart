@@ -27,13 +27,55 @@ class AccessServices extends ChangeNotifier {
   Future<void> changeImage(File? newImage) async {
     if (newImage == null) return;
 
-    try{
-      final location = await StorageService.uploadFile(newImage, "profile_picture/");
-      if(_userModel.image != "default_profile.png") await StorageService.delete(_userModel.image);
-      await Api(collection: "users", doc: _userModel.uid).updateDocument({'image': location});
+    try {
+      showLoading(true);
+      final firestore = FirebaseFirestore.instance;
+      int counter = 0;
+      final location =
+          await StorageService.uploadFile(newImage, "profile_picture/");
+      if (_userModel.image != "default_profile.png")
+        await StorageService.delete(_userModel.image);
+      final groups = await firestore
+          .collection('users/${_userModel.uid}/groups')
+          .get()
+          .then((QuerySnapshot snapshot) {
+        return snapshot.docs;
+      });
+
+      final personalChats = await firestore
+          .collection('users/${_userModel.uid}/personalChats')
+          .get()
+          .then((QuerySnapshot snapshot) {
+        return snapshot.docs;
+      });
+
+      var batch = firestore.batch();
+      for (DocumentSnapshot i in groups) {
+        final groupMember = firestore
+            .collection("groups/${i["id"]}/members")
+            .doc(_userModel.uid);
+        batch.update(groupMember, {'image': location});
+        if (++counter >= 500) await batch.commit();
+      }
+
+      for (DocumentSnapshot i in personalChats) {
+        final personatChatGroup = firestore
+            .collection("groups/${i["id"]}/members")
+            .doc(_userModel.uid);
+        batch.update(personatChatGroup, {'image': location});
+        if (++counter >= 500) await batch.commit();
+        final friend = firestore
+            .collection("users/${i["uid"]}/personalChats")
+            .doc(_userModel.uid);
+        batch.update(friend, {'image': location});
+        if (++counter >= 500) await batch.commit();
+      }
+      final currentUsers = firestore.collection("users").doc(_userModel.uid);
+      batch.update(currentUsers, {'image': location});
+      await batch.commit();
       _userModel.image = location;
-      notifyListeners();
-    }catch(e){
+      showLoading(false);
+    } catch (e) {
       debugPrint(e.toString());
     }
   }
@@ -225,7 +267,7 @@ class AccessServices extends ChangeNotifier {
         );
         await loadUserDoc();
         return true;
-      } on FirebaseAuthException catch(e){
+      } on FirebaseAuthException catch (e) {
         debugPrint(e.toString());
         return false;
       }
