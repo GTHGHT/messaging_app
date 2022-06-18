@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:messaging_app/screens/add_members_screen.dart';
 import 'package:messaging_app/screens/info_group_screen.dart';
 import 'package:messaging_app/screens/theme_mode_screen.dart';
 import 'package:messaging_app/screens/access_screen.dart';
@@ -195,6 +196,7 @@ class Kongko extends StatelessWidget {
             "/update_account": (_) => const UpdateAccountScreen(),
             "/chat/info": (_) => const InfoGroupScreen(),
             "/show_account": (_) => const ShowAccountScreen(),
+            "/chat/info/add": (_) => const AddMembersScreen(),
           },
           initialRoute: "/",
         );

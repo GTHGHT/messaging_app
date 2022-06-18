@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:messaging_app/services/access_services.dart';
 import 'package:messaging_app/utils/chat_data.dart';
 import 'package:messaging_app/utils/group_data.dart';
+import 'package:messaging_app/utils/personal_chat_data.dart';
 import 'package:messaging_app/utils/search_data.dart';
 import 'package:messaging_app/utils/show_account_data.dart';
 import 'package:provider/provider.dart';
@@ -75,10 +76,13 @@ class InfoGroupScreen extends StatelessWidget {
                         ? value["isAdmin"]
                         : false,
                     onTap: () async {
-                      await context
-                          .read<ShowAccountData>()
-                          .loadUserModel(value['uid']);
-                      Navigator.pushNamed(context, '/show_account');
+                      if (context.read<AccessServices>().userModel.uid !=
+                          value["uid"]) {
+                        await context
+                            .read<ShowAccountData>()
+                            .loadUserModel(value['uid']);
+                        Navigator.pushNamed(context, '/show_account');
+                      }
                     },
                     onLongPress: context.watch<ChatData>().isAdmin
                         ? () {
@@ -94,7 +98,12 @@ class InfoGroupScreen extends StatelessWidget {
                                           ? value["isAdmin"]
                                           : false))
                                         SimpleDialogOption(
-                                          child: Text("Jadikan Sebagai Admin"),
+                                          child: Text(
+                                            "Jadikan Sebagai Admin",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyLarge,
+                                          ),
                                           onPressed: () {
                                             context
                                                 .read<ChatData>()
@@ -146,7 +155,7 @@ class InfoGroupScreen extends StatelessWidget {
                                           await context
                                               .read<ShowAccountData>()
                                               .loadUserModel(value['uid']);
-                                          Navigator.pushNamed(
+                                          Navigator.popAndPushNamed(
                                               context, '/show_account');
                                         },
                                       ),
@@ -211,7 +220,10 @@ class InfoGroupScreen extends StatelessWidget {
                     if (context.watch<ChatData>().isAdmin)
                       IconButton(
                         icon: Icon(Icons.add),
-                        onPressed: () {},
+                        onPressed: () {
+                          context.read<PersonalChatData>().clearModel();
+                          Navigator.pushNamed(context, "/chat/info/add");
+                        },
                       ),
                     IconButton(
                       onPressed: () {

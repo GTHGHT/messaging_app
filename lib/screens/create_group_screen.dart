@@ -92,14 +92,14 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
             ),
             TextField(
               controller: groupId,
-              decoration: const InputDecoration(hintText: "ID Grup"),
+              decoration: const InputDecoration(labelText: "ID Grup"),
             ),
             const SizedBox(
               height: 10,
             ),
             TextField(
               controller: groupTitle,
-              decoration: const InputDecoration(hintText: "Judul Grup"),
+              decoration: const InputDecoration(labelText: "Judul Grup"),
             ),
             const SizedBox(
               height: 10,
@@ -109,7 +109,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
               minLines: 3,
               maxLines: 6,
               decoration: const InputDecoration(
-                hintText: "Deskripsi Grup",
+                labelText: "Deskripsi Grup",
                 contentPadding: EdgeInsets.all(10),
               ),
             ),

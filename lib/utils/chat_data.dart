@@ -136,24 +136,45 @@ class ChatData extends ChangeNotifier {
     }
   }
 
-  Future<void> changeAdminStatus(String uid, bool isAdmin) async {
+  Future<void> addMember(String uid) async {
+    if (isAdmin) {
+      final memberDoc = await Api(
+        collection: "groups/${_groupModel.id}/members",
+        doc: uid,
+      ).getDocument();
+      if(memberDoc.exists) {
+        throw Exception("Member Sudah Ada");
+      }
+      final userDoc = await Api(collection: "users", doc: uid).getDocument();
+      final userModel = UserModel.fromMap(userDoc.data() ?? {});
+      await Api(
+        collection: "groups/${_groupModel.id}/members",
+        doc: uid,
+      ).setDocument(userModel.toMapShort());
+      await Api(
+        collection: "users/$uid/groups",
+        doc: _groupModel.id,
+      ).setDocument(_groupModel.toMapShort());
+    }
+  }
+
+  Future<void> changeAdminStatus(String uid, bool newIsAdmin) async {
     if (isAdmin) {
       await Api(
         collection: "groups/${_groupModel.id}/members",
         doc: uid,
-      ).updateDocument({'isAdmin': isAdmin});
+      ).updateDocument({'isAdmin': newIsAdmin});
     }
   }
 
-  Future<void> kickMember(String uid) async{
-    if(isAdmin){
+  Future<void> kickMember(String uid) async {
+    if (isAdmin) {
       await Api(
-          collection: "groups/${_groupModel.id}/members",
-          doc: uid,
+        collection: "groups/${_groupModel.id}/members",
+        doc: uid,
       ).deleteDocument();
-      await Api(
-        collection: "users/$uid/groups", doc:  _groupModel.id
-      ).deleteDocument();
+      await Api(collection: "users/$uid/groups", doc: _groupModel.id)
+          .deleteDocument();
     }
   }
 
