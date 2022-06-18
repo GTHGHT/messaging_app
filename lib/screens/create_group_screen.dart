@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:messaging_app/utils/group_model.dart';
+import 'package:messaging_app/model/group_model.dart';
+import 'package:messaging_app/utils/image_data.dart';
 import 'package:provider/provider.dart';
 
 import '../utils/group_data.dart';
@@ -16,10 +17,32 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
   TextEditingController groupTitle = TextEditingController();
   TextEditingController groupDesc = TextEditingController();
 
+  showSnackBar(String content) {
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(content),
+        ),
+      );
+  }
+
+  @override
+  dispose() {
+    super.dispose();
+    groupId.dispose();
+    groupTitle.dispose();
+    groupDesc.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final addButton = context.select<GroupData, bool>((value) => value.loading)
-        ? const CircularProgressIndicator()
+        ? SizedBox(
+            height: 52.0,
+            width: 52.0,
+            child: const CircularProgressIndicator(),
+          )
         : ElevatedButton(
             onPressed: () async {
               context.read<GroupData>().groupModel = GroupModel(
@@ -27,11 +50,14 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                   title: groupTitle.text,
                   image: "",
                   desc: groupDesc.text);
-              bool success = await context.read<GroupData>().createGroup();
+              bool success = await context
+                  .read<GroupData>()
+                  .createGroup(context.read<ImageData>().image);
               if (success) {
                 Navigator.of(context).pop();
               } else {
-                ScaffoldMessenger.of(context)..clearSnackBars()
+                ScaffoldMessenger.of(context)
+                  ..clearSnackBars()
                   ..showSnackBar(
                     const SnackBar(
                       content: Text("Group Sudah Ada"),
@@ -49,16 +75,31 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
         padding: const EdgeInsets.all(20),
         child: ListView(
           children: [
+            GestureDetector(
+              onTap: () =>
+                  context.read<ImageData>().showImagePickerDialog(context),
+              child: CircleAvatar(
+                radius: 64,
+                child: ClipOval(
+                  child: context.watch<ImageData>().image != null
+                      ? Image.file(context.watch<ImageData>().image!)
+                      : Image.asset("images/default_group.png"),
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
             TextField(
               controller: groupId,
-              decoration: const InputDecoration(hintText: "ID Grup"),
+              decoration: const InputDecoration(labelText: "ID Grup"),
             ),
             const SizedBox(
               height: 10,
             ),
             TextField(
               controller: groupTitle,
-              decoration: const InputDecoration(hintText: "Judul Grup"),
+              decoration: const InputDecoration(labelText: "Judul Grup"),
             ),
             const SizedBox(
               height: 10,
@@ -68,7 +109,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
               minLines: 3,
               maxLines: 6,
               decoration: const InputDecoration(
-                hintText: "Deskripsi Grup",
+                labelText: "Deskripsi Grup",
                 contentPadding: EdgeInsets.all(10),
               ),
             ),

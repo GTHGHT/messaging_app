@@ -1,15 +1,24 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:messaging_app/screens/add_members_screen.dart';
+import 'package:messaging_app/screens/info_group_screen.dart';
+import 'package:messaging_app/screens/theme_mode_screen.dart';
 import 'package:messaging_app/screens/access_screen.dart';
 import 'package:messaging_app/screens/create_group_screen.dart';
 import 'package:messaging_app/screens/create_personal_chat.dart';
 import 'package:messaging_app/screens/join_group_screen.dart';
 import 'package:messaging_app/screens/landing_screen.dart';
-import 'package:messaging_app/screens/load_user_screen.dart';
+import 'package:messaging_app/screens/loading_screen.dart';
 import 'package:messaging_app/screens/login_screen.dart';
+import 'package:messaging_app/screens/update_account_screen.dart';
 import 'package:messaging_app/utils/bottom_nav_bar_data.dart';
 import 'package:messaging_app/utils/chat_data.dart';
 import 'package:messaging_app/utils/group_data.dart';
+import 'package:messaging_app/utils/image_data.dart';
+import 'package:messaging_app/utils/search_data.dart';
+import 'package:messaging_app/utils/show_account_data.dart';
+import 'screens/show_account_screen.dart';
+import 'utils/theme_mode_data.dart';
 import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
@@ -67,6 +76,9 @@ class Kongko extends StatelessWidget {
         ChangeNotifierProvider<GroupData>(
           create: (_) => GroupData(),
         ),
+        ChangeNotifierProvider<ImageData>(
+          create: (_) => ImageData(),
+        ),
         ChangeNotifierProvider<AccessServices>(
           create: (_) => AccessServices(),
         ),
@@ -79,92 +91,116 @@ class Kongko extends StatelessWidget {
         ChangeNotifierProvider<PersonalChatData>(
           create: (_) => PersonalChatData(),
         ),
+        ChangeNotifierProvider<ThemeModeData>(
+          create: (_) => ThemeModeData(),
+        ),
+        ChangeNotifierProvider<SearchData>(
+          create: (_) => SearchData(),
+        ),
+        ChangeNotifierProvider<ShowAccountData>(
+          create: (_) => ShowAccountData(),
+        ),
       ],
-      child: MaterialApp(
-        // Light Theme
-        theme: ThemeData.light().copyWith(
-          colorScheme: ThemeData.light().colorScheme.copyWith(
+      child: Builder(builder: (context) {
+        return MaterialApp(
+          themeMode: context.watch<ThemeModeData>().themeMode,
+          // Light Theme
+          theme: ThemeData.light().copyWith(
+            colorScheme: ThemeData.light().colorScheme.copyWith(
+                  primary: Colors.lightBlue,
+                  error: Colors.deepOrange,
+                  onBackground: Colors.grey,
+                ),
+            inputDecorationTheme: InputDecorationTheme(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              hintStyle: textTheme.bodyLarge,
+            ),
+            textTheme: textTheme.apply(
+              bodyColor: const Color(0xff2b2b2b),
+              displayColor: const Color(0xff2b2b2b),
+            ),
+            listTileTheme: const ListTileThemeData(
+              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+              style: ListTileStyle.list,
+              textColor: Color(0xff2b2b2b),
+            ),
+            primaryTextTheme: textTheme.apply(
+              bodyColor: Colors.white,
+              displayColor: Colors.white,
+            ),
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
                 primary: Colors.lightBlue,
-                error: Colors.deepOrange,
-                onBackground: Colors.grey,
+                padding: const EdgeInsets.all(16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                textStyle: textTheme.bodyLarge,
               ),
-          inputDecorationTheme: InputDecorationTheme(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            hintStyle: textTheme.bodyLarge,
-          ),
-          textTheme: textTheme.apply(
-            bodyColor: const Color(0xff2b2b2b),
-            displayColor: const Color(0xff2b2b2b),
-          ),
-          listTileTheme: const ListTileThemeData(
-            style: ListTileStyle.list,
-            textColor: Color(0xff2b2b2b),
-          ),
-          primaryTextTheme: textTheme.apply(
-            bodyColor: Colors.white,
-            displayColor: Colors.white,
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              primary: Colors.lightBlue,
-              padding: const EdgeInsets.all(16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              textStyle: textTheme.bodyLarge,
             ),
           ),
-        ),
-        // Dark Theme
-        darkTheme: ThemeData.dark().copyWith(
-          colorScheme: ThemeData.dark().colorScheme.copyWith(
+
+          // Dark Theme
+          darkTheme: ThemeData.dark().copyWith(
+            colorScheme: ThemeData.dark().colorScheme.copyWith(
+                  primary: Colors.lightGreen,
+                  error: Colors.pink,
+                  onBackground: Colors.white,
+                ),
+            inputDecorationTheme: InputDecorationTheme(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              hintStyle: textTheme.bodyLarge,
+            ),
+            textTheme: textTheme.apply(
+              bodyColor: Colors.white,
+              displayColor: Colors.white,
+            ),
+            listTileTheme: const ListTileThemeData(
+              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+              style: ListTileStyle.list,
+              textColor: Colors.white,
+            ),
+            primaryTextTheme: textTheme.apply(
+              bodyColor: const Color(0xff2b2b2b),
+              displayColor: const Color(0xff2b2b2b),
+            ),
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
                 primary: Colors.lightGreen,
-                error: Colors.pink,
-                onBackground: Colors.white,
+                padding: const EdgeInsets.all(16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                textStyle: textTheme.bodyLarge,
               ),
-          inputDecorationTheme: InputDecorationTheme(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            hintStyle: textTheme.bodyLarge,
-          ),
-          textTheme: textTheme.apply(
-            bodyColor: Colors.white,
-            displayColor: Colors.white,
-          ),
-          primaryTextTheme: textTheme.apply(
-            bodyColor: const Color(0xff2b2b2b),
-            displayColor: const Color(0xff2b2b2b),
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              primary: Colors.lightGreen,
-              padding: const EdgeInsets.all(16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              textStyle: textTheme.bodyLarge,
             ),
           ),
-        ),
-        routes: {
-          "/": (_) => const LoadUserScreen(),
-          "/landing": (_) => const LandingScreen(),
-          "/access": (_) => const AccessScreen(),
-          "/login": (_) => const LoginScreens(),
-          "/register": (_) => const RegisterScreen(),
-          "/main": (_) => const MainScreen(),
-          "/chat": (_) => const ChatScreen(),
-          "/create_group": (_) => const CreateGroupScreen(),
-          "/join_group": (_) => const JoinGroupScreen(),
-          "/create_pc": (_) => const CreatePersonalChatScreen(),
-        },
-        initialRoute: "/",
-      ),
+          routes: {
+            "/": (_) => const LoadingScreen(),
+            "/landing": (_) => const LandingScreen(),
+            "/access": (_) => const AccessScreen(),
+            "/login": (_) => const LoginScreens(),
+            "/register": (_) => const RegisterScreen(),
+            "/main": (_) => const MainScreen(),
+            "/chat": (_) => const ChatScreen(),
+            "/create_group": (_) => const CreateGroupScreen(),
+            "/join_group": (_) => const JoinGroupScreen(),
+            "/create_pc": (_) => const CreatePersonalChatScreen(),
+            "/change_theme_mode": (_) => const ThemeModeScreen(),
+            "/update_account": (_) => const UpdateAccountScreen(),
+            "/chat/info": (_) => const InfoGroupScreen(),
+            "/show_account": (_) => const ShowAccountScreen(),
+            "/chat/info/add": (_) => const AddMembersScreen(),
+          },
+          initialRoute: "/",
+        );
+      }),
     );
   }
 }

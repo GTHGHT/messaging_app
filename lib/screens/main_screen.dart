@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../utils/bottom_nav_bar_data.dart';
 import '../utils/group_data.dart';
+import '../utils/image_data.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -40,19 +41,22 @@ class MainScreen extends StatelessWidget {
             message: "Buat Grup",
             child: IconButton(
               onPressed: () {
+                context.read<ImageData>().clearImage();
                 Navigator.of(context).pushNamed('/create_group');
               },
               icon: const Icon(Icons.add),
             ),
           ),
-          Tooltip(message: "Gabung Grup",
-          child: IconButton(
-            onPressed: (){
-              context.read<GroupData>().clearModel();
-              Navigator.of(context).pushNamed('/join_group');
-            },
-            icon: const Icon(Icons.group),
-          ),)
+          Tooltip(
+            message: "Gabung Grup",
+            child: IconButton(
+              onPressed: () {
+                context.read<GroupData>().clearModel();
+                Navigator.of(context).pushNamed('/join_group');
+              },
+              icon: const Icon(Icons.group),
+            ),
+          )
         ],
       );
     } else {
@@ -92,7 +96,11 @@ class MainScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: _pages.elementAt(context.watch<BottomNavBarData>().currentIndex),
+      body: SafeArea(
+        child: _pages.elementAt(
+          context.watch<BottomNavBarData>().currentIndex,
+        ),
+      ),
     );
   }
 }

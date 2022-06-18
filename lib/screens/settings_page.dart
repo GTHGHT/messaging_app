@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:messaging_app/services/access_services.dart';
+import 'package:messaging_app/utils/bottom_nav_bar_data.dart';
 import 'package:provider/provider.dart';
 
 import '../services/storage_services.dart';
+import '../utils/image_data.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -20,12 +22,7 @@ class SettingsPage extends StatelessWidget {
                 context.read<AccessServices>().userModel.image),
             builder: (_, snapshot) {
               if (!snapshot.hasData) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(),
-                  ],
-                );
+                return CircularProgressIndicator();
               }
               return CircleAvatar(
                 radius: 32,
@@ -38,29 +35,24 @@ class SettingsPage extends StatelessWidget {
           title: Text(context.watch<AccessServices>().userModel.username),
           subtitle: Text(context.watch<AccessServices>().userModel.email),
         ),
-        SizedBox(
-          height: 20,
-        ),
         ListTile(
-          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           leading: Icon(Icons.info),
           title: Text("Ubah Data Akun"),
           trailing: Icon(Icons.navigate_next),
-          onTap: () {},
+          onTap: () {context.read<ImageData>().clearImage();Navigator.pushNamed(context, "/update_account");},
         ),
         ListTile(
-          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           leading: Icon(Icons.color_lens),
           title: Text("Ubah Tema"),
           trailing: Icon(Icons.navigate_next),
-          onTap: () {},
+          onTap: () => Navigator.pushNamed(context, '/change_theme_mode'),
         ),
         ListTile(
-          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           leading: Icon(Icons.logout),
           title: Text("Keluar Dari Akun"),
           onTap: () {
             context.read<AccessServices>().logout();
+            context.read<BottomNavBarData>().currentIndex = 0;
             Navigator.pushReplacementNamed(context, "/landing");
           },
         ),

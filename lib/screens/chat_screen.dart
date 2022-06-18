@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:messaging_app/services/access_services.dart';
 import 'package:messaging_app/utils/chat_data.dart';
+import 'package:messaging_app/utils/show_account_data.dart';
 import 'package:provider/provider.dart';
 
 import '../services/storage_services.dart';
+import '../utils/search_data.dart';
 
 class ChatScreen extends StatelessWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -14,32 +16,46 @@ class ChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            ClipOval(
-              child: FutureBuilder<String>(
-                future: StorageService.getImageLink(
-                    context.select<ChatData, String>((value) => value.image)),
-                builder: (_, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                  return Image(
-                    image: NetworkImage(snapshot.data ?? "default_profile.png"),
-                    height: 40,
-                    width: 40,
-                  );
-                },
+        title: ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: ClipOval(
+            child: FutureBuilder<String>(
+              future: StorageService.getImageLink(
+                context.select<ChatData, String>((value) => value.image),
               ),
+              builder: (_, snapshot) {
+                if (!snapshot.hasData) {
+                  return const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                return Image(
+                  image: NetworkImage(snapshot.data ?? ""),
+                  height: 40,
+                  width: 40,
+                );
+              },
             ),
-            const SizedBox(
-              width: 15,
-            ),
-            Text(context.select<ChatData, String>((value) => value.title)),
-          ],
+          ),
+          title: Text(
+            context.select<ChatData, String>((value) => value.title),
+            style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
+
+            overflow: TextOverflow.ellipsis,
+          ),
+          onTap: context.watch<ChatData>().groupModel.isPC
+              ? () async {
+            await context.read<ShowAccountData>().loadUserModel(context.read<ChatData>().pcUid);
+            Navigator.pushNamed(context, "/show_account");
+          }
+              : () async {
+                  context.read<SearchData>().clearSearch();
+                  await context.read<ChatData>().loadDesc();
+                  Navigator.of(context).pushNamed("/chat/info");
+                },
         ),
       ),
       body: Column(
@@ -181,7 +197,7 @@ class MessageBubble extends StatelessWidget {
     required this.text,
     required this.senderUid,
     required this.sentTime,
-  }): super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -189,24 +205,28 @@ class MessageBubble extends StatelessWidget {
       Material(
         elevation: 3,
         color: senderUid ==
-                context.select<AccessServices, String>((value) => value.userModel.uid)
+                context.select<AccessServices, String>(
+                  (value) => value.userModel.uid,
+                )
             ? Colors.lightBlueAccent
             : Colors.lightGreenAccent,
         borderRadius: senderUid ==
-                context.select<AccessServices, String>((value) => value.userModel.uid)
+                context.select<AccessServices, String>(
+                    (value) => value.userModel.uid)
             ? const BorderRadius.all(Radius.circular(15)).copyWith(
-                topLeft: Radius.zero,
+                topRight: Radius.zero,
               )
             : const BorderRadius.all(Radius.circular(15)).copyWith(
-                topRight: Radius.zero,
+                topLeft: Radius.zero,
               ),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
           child: Column(
             crossAxisAlignment: senderUid ==
-                    context.select<AccessServices, String>((value) => value.userModel.uid)
-                ? CrossAxisAlignment.start
-                : CrossAxisAlignment.end,
+                    context.select<AccessServices, String>(
+                        (value) => value.userModel.uid)
+                ? CrossAxisAlignment.end
+                : CrossAxisAlignment.start,
             children: [
               Text(
                 sender,
@@ -215,9 +235,21 @@ class MessageBubble extends StatelessWidget {
                     .bodyMedium!
                     .copyWith(fontWeight: FontWeight.bold),
               ),
-              Text(
-                text,
-                style: Theme.of(context).textTheme.bodyMedium,
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width / 2 + 50,
+                ),
+                child: Text(
+                  text,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  maxLines: 5,
+                  textAlign: senderUid ==
+                          context.select<AccessServices, String>(
+                              (value) => value.userModel.uid)
+                      ? TextAlign.end
+                      : TextAlign.start,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ),
@@ -241,13 +273,15 @@ class MessageBubble extends StatelessWidget {
     ];
     return Row(
       mainAxisAlignment: senderUid ==
-              context.select<AccessServices, String>((value) => value.userModel.uid)
-          ? MainAxisAlignment.start
-          : MainAxisAlignment.end,
+              context.select<AccessServices, String>(
+                  (value) => value.userModel.uid)
+          ? MainAxisAlignment.end
+          : MainAxisAlignment.start,
       children: senderUid ==
-              context.select<AccessServices, String>((value) => value.userModel.uid)
-          ? rowChildren
-          : rowChildren.reversed.toList(),
+              context.select<AccessServices, String>(
+                  (value) => value.userModel.uid)
+          ? rowChildren.reversed.toList()
+          : rowChildren,
     );
   }
 }

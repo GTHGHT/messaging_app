@@ -3,7 +3,6 @@ import 'package:messaging_app/components/chats_list_tile.dart';
 import 'package:provider/provider.dart';
 
 import '../utils/group_data.dart';
-import '../utils/group_model.dart';
 
 class JoinGroupScreen extends StatefulWidget {
   const JoinGroupScreen({Key? key}) : super(key: key);
@@ -40,28 +39,19 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
   Widget build(BuildContext context) {
     final searchButton =
         context.select<GroupData, bool>((value) => value.loading)
-            ? const CircularProgressIndicator()
+            ? SizedBox(
+                height: 52.0,
+                width: 52.0,
+                child: const CircularProgressIndicator(),
+              )
             : ElevatedButton(
                 onPressed: () async {
-                  try {
-                    if(controller.text.isNotEmpty) {
-                      context
-                          .read<GroupData>()
-                          .groupId = controller.text;
-                      final groupInfo =
-                      await context.read<GroupData>().getGroupInfo();
-                      if (groupInfo.exists) {
-                        context
-                            .read<GroupData>()
-                            .groupModel =
-                            GroupModel.fromMap(groupInfo.data()!);
-                        return;
-                      }
+                    if (controller.text.isNotEmpty) {
+                      final isFound = await context.read<GroupData>().loadGroupInfo(controller.text);
+                      if(isFound) return;
                     }
                     showSnackBar("${controller.text} Tidak Ditemukan");
-                  } catch (e) {
-                    showSnackBar(e.toString());
-                  }
+
                 },
                 child: const Text("Cari Grup"),
               );

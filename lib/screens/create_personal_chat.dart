@@ -33,7 +33,11 @@ class _CreatePersonalChatScreenState extends State<CreatePersonalChatScreen> {
   Widget build(BuildContext context) {
     final searchButton =
         context.select<PersonalChatData, bool>((value) => value.loading)
-            ? const CircularProgressIndicator()
+            ? SizedBox(
+                height: 52.0,
+                width: 52.0,
+                child: const CircularProgressIndicator(),
+              )
             : ElevatedButton(
                 onPressed: () async {
                   final isFound = await context
@@ -61,7 +65,7 @@ class _CreatePersonalChatScreenState extends State<CreatePersonalChatScreen> {
                   try {
                     await context.read<PersonalChatData>().createPersonalChat();
                     Navigator.of(context).pop();
-                  }catch (e){
+                  } catch (e) {
                     showSnackBar("Personal Chat Sudah Ada");
                   }
                 },

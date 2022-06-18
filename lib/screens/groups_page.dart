@@ -2,10 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:messaging_app/utils/chat_data.dart';
 import 'package:messaging_app/utils/group_data.dart';
-import 'package:messaging_app/utils/group_model.dart';
+import 'package:messaging_app/model/group_model.dart';
 import 'package:provider/provider.dart';
 
 import '../components/chats_list_tile.dart';
+import '../services/access_services.dart';
 
 class GroupsPage extends StatelessWidget {
   const GroupsPage({Key? key}) : super(key: key);
@@ -14,7 +15,7 @@ class GroupsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     const defaultImage = "default_group.png";
 
-    return StreamBuilder<QuerySnapshot>(
+    return context.watch<AccessServices>().userModel.username.isEmpty?SizedBox():StreamBuilder<QuerySnapshot>(
       stream: context.watch<GroupData>().getUserGroups(),
       builder: (context, snapshot) {
         Widget defaultEmptyReturn = const Center(

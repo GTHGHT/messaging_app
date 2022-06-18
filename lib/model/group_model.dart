@@ -2,12 +2,14 @@ class GroupModel {
   String id;
   String title;
   String image;
+  bool isPC;
   String? desc;
 
   GroupModel({
     required this.id,
     required this.title,
     required this.image,
+    this.isPC = false,
     this.desc,
   });
 
@@ -19,24 +21,24 @@ class GroupModel {
     );
   }
 
-  Map<String, dynamic> toMap(){
-    final groupMap =  {
+  Map<String, dynamic> toMap() {
+    final groupMap = {
       'id': id,
-      'type': 1,
+      'type': isPC?2:1,
       'title': title,
-      'image': image.isEmpty ? "default_group.png": image,
+      'image': image,
     };
-    if ((desc??"").isNotEmpty){
+    if ((desc ?? "").isNotEmpty) {
       groupMap['desc'] = desc ?? "";
     }
     return groupMap;
   }
 
-  Map<String, dynamic> toMapShort(){
+  Map<String, dynamic> toMapShort() {
     return {
       'id': id,
       'title': title,
-      'image': image.isEmpty ? "default_group.png": image,
+      'image': image,
     };
   }
 

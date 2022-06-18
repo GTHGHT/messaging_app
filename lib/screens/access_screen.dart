@@ -33,7 +33,7 @@ class AccessScreen extends StatelessWidget {
                 width: MediaQuery.of(context).size.width / 2,
                 child: ElevatedButton(
                   onPressed: (){
-                    Navigator.of(context).pushNamed("/register");
+                    Navigator.of(context).pushReplacementNamed("/register");
                   },
                   child: const Text("Register"),
                 ),
@@ -45,7 +45,7 @@ class AccessScreen extends StatelessWidget {
                 width: MediaQuery.of(context).size.width / 2,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).pushNamed("/login");
+                    Navigator.of(context).pushReplacementNamed("/login");
                   },
                   child: const Text("Login"),
                 ),
