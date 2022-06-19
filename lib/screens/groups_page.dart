@@ -16,7 +16,7 @@ class GroupsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     const defaultImage = "default_group.png";
 
-    return context.watch<AccessServices>().userModel.username.isEmpty?SizedBox():StreamBuilder<QuerySnapshot>(
+    return context.watch<AccessServices>().userModel.username.isEmpty?const SizedBox():StreamBuilder<QuerySnapshot>(
       stream: context.watch<GroupData>().getUserGroups(),
       builder: (context, snapshot) {
         Widget defaultEmptyReturn = const Center(

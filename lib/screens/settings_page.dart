@@ -13,7 +13,7 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
         ListTile(
@@ -22,7 +22,7 @@ class SettingsPage extends StatelessWidget {
                 context.read<AccessServices>().userModel.image),
             builder: (_, snapshot) {
               if (!snapshot.hasData) {
-                return CircularProgressIndicator();
+                return const CircularProgressIndicator();
               }
               return CircleAvatar(
                 radius: 32,
@@ -36,20 +36,20 @@ class SettingsPage extends StatelessWidget {
           subtitle: Text(context.watch<AccessServices>().userModel.email),
         ),
         ListTile(
-          leading: Icon(Icons.info),
-          title: Text("Ubah Data Akun"),
-          trailing: Icon(Icons.navigate_next),
+          leading: const Icon(Icons.info),
+          title: const Text("Ubah Data Akun"),
+          trailing: const Icon(Icons.navigate_next),
           onTap: () {context.read<ImageData>().clearImage();Navigator.pushNamed(context, "/update_account");},
         ),
         ListTile(
-          leading: Icon(Icons.color_lens),
-          title: Text("Ubah Tema"),
-          trailing: Icon(Icons.navigate_next),
+          leading: const Icon(Icons.color_lens),
+          title: const Text("Ubah Tema"),
+          trailing: const Icon(Icons.navigate_next),
           onTap: () => Navigator.pushNamed(context, '/change_theme_mode'),
         ),
         ListTile(
-          leading: Icon(Icons.logout),
-          title: Text("Keluar Dari Akun"),
+          leading: const Icon(Icons.logout),
+          title: const Text("Keluar Dari Akun"),
           onTap: () {
             context.read<AccessServices>().logout();
             context.read<BottomNavBarData>().currentIndex = 0;

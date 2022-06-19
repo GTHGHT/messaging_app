@@ -29,19 +29,19 @@ class ImageData extends ChangeNotifier {
     await showDialog(
       context: context,
       builder: (ctx) => SimpleDialog(
-        title: Text("Pilih Sumber"),
+        title: const Text("Pilih Sumber"),
         children: [
           ListTile(
-            leading: Icon(Icons.folder),
-            title: Text("dari Galeri"),
+            leading: const Icon(Icons.folder),
+            title: const Text("dari Galeri"),
             onTap: () async {
               await getImage(ImageSource.gallery,showSnackBar);
               Navigator.pop(ctx);
             },
           ),
           ListTile(
-            leading: Icon(Icons.camera),
-            title: Text("dari Kamera"),
+            leading: const Icon(Icons.camera),
+            title: const Text("dari Kamera"),
             onTap: () async {
               await getImage(ImageSource.camera,showSnackBar);
               Navigator.pop(ctx);
@@ -81,7 +81,7 @@ class ImageData extends ChangeNotifier {
       if (pickedImage != null) {
         final croppedImage = await ImageCropper().cropImage(
           sourcePath: pickedImage.path,
-          aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+          aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
           aspectRatioPresets: [CropAspectRatioPreset.square],
           compressQuality: 90,
           compressFormat: ImageCompressFormat.jpg,

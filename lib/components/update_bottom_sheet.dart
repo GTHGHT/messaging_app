@@ -37,7 +37,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final ubahButton = widget.loading
-        ? SizedBox(
+        ? const SizedBox(
       key: ValueKey(1),
       height: 52.0,
       width: 52.0,
@@ -46,10 +46,10 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet> {
       ),
     )
         : SizedBox(
-      key: ValueKey(2),
+      key: const ValueKey(2),
       width: MediaQuery.of(context).size.width,
       child: ElevatedButton(
-        child: Text(
+        child: const Text(
           'Ubah',
         ),
         onPressed: () {
@@ -58,7 +58,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet> {
       ),
     );
     return Padding(
-      padding: EdgeInsets.all(20.0),
+      padding: const EdgeInsets.all(20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
@@ -67,29 +67,29 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet> {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleLarge,
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           TextField(
-            decoration: InputDecoration(contentPadding: EdgeInsets.all(8)),
+            decoration: const InputDecoration(contentPadding: EdgeInsets.all(8)),
             minLines: 1,
             maxLines: 6,
             controller: valueController,
             autofocus: true,
             textAlign: TextAlign.center,
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           AnimatedSwitcher(
-              duration: Duration(milliseconds: 200), child: ubahButton),
-          SizedBox(
+              duration: const Duration(milliseconds: 200), child: ubahButton),
+          const SizedBox(
             height: 10,
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(primary: Colors.red),
             onPressed: () => Navigator.pop(context),
-            child: Text("Batalkan"),
+            child: const Text("Batalkan"),
           ),
         ],
       ),

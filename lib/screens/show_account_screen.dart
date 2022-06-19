@@ -15,7 +15,7 @@ class ShowAccountScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           CircleAvatar(
             radius: 64,
             child: ClipOval(
@@ -39,11 +39,11 @@ class ShowAccountScreen extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.account_circle),
+            leading: const Icon(Icons.account_circle),
             title: Text(context.watch<ShowAccountData>().userModel.username),
           ),
           ListTile(
-            leading: Icon(Icons.email),
+            leading: const Icon(Icons.email),
             title: Text(context.watch<ShowAccountData>().userModel.email),
           ),
         ],

@@ -19,7 +19,7 @@ class ThemeModeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Ubah Tema"),
+        title: const Text("Ubah Tema"),
       ),
       body: Column(
         children: [

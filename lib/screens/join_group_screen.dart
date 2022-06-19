@@ -39,10 +39,10 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
   Widget build(BuildContext context) {
     final searchButton =
         context.select<GroupData, bool>((value) => value.loading)
-            ? SizedBox(
+            ? const SizedBox(
                 height: 52.0,
                 width: 52.0,
-                child: const CircularProgressIndicator(),
+                child: CircularProgressIndicator(),
               )
             : ElevatedButton(
                 onPressed: () async {

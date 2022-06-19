@@ -21,16 +21,16 @@ class InfoGroupScreen extends StatelessWidget {
       appBar: buildAppBar(context),
       body: ListView(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           buildGroupImage(context),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           ListTile(
-            leading: Icon(Icons.text_snippet),
-            title: Text("Grup Id"),
+            leading: const Icon(Icons.text_snippet),
+            title: const Text("Grup Id"),
             subtitle: Text(context.watch<ChatData>().groupId),
           ),
           buildTitleTile(context),
@@ -92,7 +92,7 @@ class InfoGroupScreen extends StatelessWidget {
                                 context: context,
                                 builder: (context) {
                                   return SimpleDialog(
-                                    title: Text("Pilih Aksi"),
+                                    title: const Text("Pilih Aksi"),
                                     children: [
                                       if (!(value.data().containsKey("isAdmin")
                                           ? value["isAdmin"]
@@ -211,15 +211,15 @@ class InfoGroupScreen extends StatelessWidget {
                 0,
                 Row(
                   children: [
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     Text(
                       "Member Grup",
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    Expanded(child: SizedBox()),
+                    const Expanded(child: SizedBox()),
                     if (context.watch<ChatData>().isAdmin)
                       IconButton(
-                        icon: Icon(Icons.add),
+                        icon: const Icon(Icons.add),
                         onPressed: () {
                           context.read<PersonalChatData>().clearModel();
                           Navigator.pushNamed(context, "/chat/info/add");
@@ -239,7 +239,7 @@ class InfoGroupScreen extends StatelessWidget {
               ..insert(
                 1,
                 AnimatedSwitcher(
-                  duration: Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 300),
                   child: context.watch<SearchData>().showSearchField
                       ? Padding(
                           padding: const EdgeInsets.symmetric(
@@ -250,7 +250,7 @@ class InfoGroupScreen extends StatelessWidget {
                                 context.read<SearchData>().searchTerm = value,
                           ),
                         )
-                      : SizedBox(),
+                      : const SizedBox(),
                 ),
               ),
           );
@@ -261,9 +261,9 @@ class InfoGroupScreen extends StatelessWidget {
 
   Widget buildDescTile(BuildContext context) {
     return ListTile(
-      title: Text("Deskripsi Grup"),
+      title: const Text("Deskripsi Grup"),
       subtitle: Text(context.watch<ChatData>().groupModel.desc ?? ""),
-      trailing: Icon(Icons.edit),
+      trailing: const Icon(Icons.edit),
       onTap: () => showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -289,10 +289,10 @@ class InfoGroupScreen extends StatelessWidget {
 
   ListTile buildTitleTile(BuildContext context) {
     return ListTile(
-      leading: Icon(Icons.groups),
-      title: Text("Judul Grup"),
+      leading: const Icon(Icons.groups),
+      title: const Text("Judul Grup"),
       subtitle: Text(context.watch<ChatData>().title),
-      trailing: Icon(Icons.edit),
+      trailing: const Icon(Icons.edit),
       onTap: () => showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -328,16 +328,16 @@ class InfoGroupScreen extends StatelessWidget {
             builder: (context) {
               if (context.watch<ChatData>().loading) {
                 return AlertDialog(
-                    title: Text("Mengubah Gambar..."),
+                    title: const Text("Mengubah Gambar..."),
                     content: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                      children: const [
                         CircularProgressIndicator(),
                       ],
                     ));
               } else {
                 Navigator.pop(context);
-                return SizedBox();
+                return const SizedBox();
               }
             });
       },
@@ -377,12 +377,12 @@ class InfoGroupScreen extends StatelessWidget {
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: Text('Keluar Grup'),
-                    content: Text('Apakah Kamu Yakin Ingin Keluar Dari Grup?'),
+                    title: const Text('Keluar Grup'),
+                    content: const Text('Apakah Kamu Yakin Ingin Keluar Dari Grup?'),
                     actions: <Widget>[
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: Text('Batal'),
+                        child: const Text('Batal'),
                       ),
                       TextButton(
                         onPressed: () async {
@@ -392,13 +392,13 @@ class InfoGroupScreen extends StatelessWidget {
                           Navigator.popUntil(
                               context, (e) => e.isFirst); // Closes the dialog
                         },
-                        child: Text('Ya'),
+                        child: const Text('Ya'),
                       ),
                     ],
                   ),
                 );
               },
-              icon: Icon(Icons.exit_to_app)),
+              icon: const Icon(Icons.exit_to_app)),
         )
       ],
     );
@@ -430,7 +430,7 @@ class MemberListTile extends StatelessWidget {
         height: 72,
         child: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 16,
             ),
             ClipOval(
@@ -451,7 +451,7 @@ class MemberListTile extends StatelessWidget {
                 },
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 16,
             ),
             Column(
@@ -462,12 +462,12 @@ class MemberListTile extends StatelessWidget {
                   name,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 if (isAdmin)
                   Container(
-                    padding: EdgeInsets.all(5),
+                    padding: const EdgeInsets.all(5),
                     decoration: ShapeDecoration(
                       shape: RoundedRectangleBorder(
                         side: BorderSide(
@@ -476,11 +476,11 @@ class MemberListTile extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: Text("Admin"),
+                    child: const Text("Admin"),
                   )
               ],
             ),
-            Expanded(
+            const Expanded(
               child: SizedBox(),
             ),
           ],

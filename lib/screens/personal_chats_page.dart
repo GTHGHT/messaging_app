@@ -16,7 +16,7 @@ class PersonalChatsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     const defaultImage = "default_profile.png";
     return context.watch<AccessServices>().userModel.username.isEmpty
-        ? SizedBox()
+        ? const SizedBox()
         : StreamBuilder<QuerySnapshot>(
             initialData: null,
             stream: context.watch<PersonalChatData>().getUserPersonalChats(),

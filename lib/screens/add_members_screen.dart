@@ -25,10 +25,10 @@ class AddMembersScreen extends StatelessWidget {
     String searchValue = "";
     final searchButton =
     context.select<PersonalChatData, bool>((value) => value.loading)
-        ? SizedBox(
+        ? const SizedBox(
       height: 52.0,
       width: 52.0,
-      child: const CircularProgressIndicator(),
+      child: CircularProgressIndicator(),
     )
         : ElevatedButton(
       onPressed: () async {
@@ -44,8 +44,8 @@ class AddMembersScreen extends StatelessWidget {
 
     final searchResult =
     context.watch<PersonalChatData>().friendModel.email.isEmpty
-        ? Padding(
-      padding: const EdgeInsets.all(26.0),
+        ? const Padding(
+      padding: EdgeInsets.all(26.0),
       child: Center(
         child: Text("Teman Tidak Ditemukan"),
       ),
@@ -91,7 +91,7 @@ class AddMembersScreen extends StatelessWidget {
                 child: SlideTransition(
                   child: child,
                   position: Tween<Offset>(
-                    begin: Offset(0, 1),
+                    begin: const Offset(0, 1),
                     end: Offset.zero,
                   ).animate(animation),
                 ),

@@ -14,13 +14,13 @@ class UpdateAccountScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Ubah Data Akun"),
+        title: const Text("Ubah Data Akun"),
       ),
       body: ConstrainedBox(
-        constraints: BoxConstraints.expand(),
+        constraints: const BoxConstraints.expand(),
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             GestureDetector(
@@ -34,17 +34,17 @@ class UpdateAccountScreen extends StatelessWidget {
                     builder: (context) {
                       if (context.watch<AccessServices>().loading) {
                         return AlertDialog(
-                          title: Text("Mengubah Gambar..."),
+                          title: const Text("Mengubah Gambar..."),
                           content: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
+                            children: const [
                               CircularProgressIndicator(),
                             ],
                           ),
                         );
                       } else {
                         Navigator.pop(context);
-                        return SizedBox();
+                        return const SizedBox();
                       }
                     });
               },
@@ -76,11 +76,11 @@ class UpdateAccountScreen extends StatelessWidget {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.account_circle),
-              title: Text("Nama"),
+              leading: const Icon(Icons.account_circle),
+              title: const Text("Nama"),
               subtitle:
                   Text(context.watch<AccessServices>().userModel.username),
-              trailing: Icon(Icons.edit),
+              trailing: const Icon(Icons.edit),
               onTap: () {
                 showModalBottomSheet(
                   context: context,
@@ -109,10 +109,10 @@ class UpdateAccountScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.alternate_email),
-              title: Text("Email"),
+              leading: const Icon(Icons.alternate_email),
+              title: const Text("Email"),
               subtitle: Text(context.watch<AccessServices>().userModel.email),
-              trailing: Icon(Icons.edit),
+              trailing: const Icon(Icons.edit),
               onTap: () {
                 showModalBottomSheet(
                   context: context,
@@ -136,7 +136,7 @@ class UpdateAccountScreen extends StatelessWidget {
                                 ctx, '/landing', (_) => false);
                             ctx.read<BottomNavBarData>().currentIndex = 0;
                             ScaffoldMessenger.of(ctx).showSnackBar(
-                              SnackBar(
+                              const SnackBar(
                                 content: Text(
                                   "Perubahan Email Berhasil, Silahkan Login Ulang",
                                 ),

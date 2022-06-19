@@ -22,7 +22,7 @@ class ChatScreen extends StatelessWidget {
               onPressed: () {
                 context.read<SearchData>().toggleSearchField();
               },
-              icon: Icon(Icons.search))
+              icon: const Icon(Icons.search))
         ],
       ),
       body: Column(

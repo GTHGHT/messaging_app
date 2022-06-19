@@ -38,10 +38,10 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
   @override
   Widget build(BuildContext context) {
     final addButton = context.select<GroupData, bool>((value) => value.loading)
-        ? SizedBox(
+        ? const SizedBox(
             height: 52.0,
             width: 52.0,
-            child: const CircularProgressIndicator(),
+            child: CircularProgressIndicator(),
           )
         : ElevatedButton(
             onPressed: () async {

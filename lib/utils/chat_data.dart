@@ -45,11 +45,9 @@ class ChatData extends ChangeNotifier {
   }
 
   Future<void> loadDesc() async {
-    if (_groupModel.desc == null) {
-      _groupModel.desc = await Api(collection: "groups", doc: _groupModel.id)
+    _groupModel.desc ??= await Api(collection: "groups", doc: _groupModel.id)
           .getDocument()
           .then((value) => value.data()!["desc"]);
-    }
     isAdmin = await Api(
       collection: "groups/${_groupModel.id}/members",
       doc: _auth.currentUser!.uid,
@@ -182,6 +180,7 @@ class ChatData extends ChangeNotifier {
 
   set isAdmin(bool value) {
     _isAdmin = value;
+    notifyListeners();
   }
 
   set messageText(String value) {

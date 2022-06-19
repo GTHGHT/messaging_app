@@ -33,8 +33,9 @@ class AccessServices extends ChangeNotifier {
       int counter = 0;
       final location =
           await StorageService.uploadFile(newImage, "profile_picture/");
-      if (_userModel.image != "default_profile.png")
+      if (_userModel.image != "default_profile.png") {
         await StorageService.delete(_userModel.image);
+      }
       final groups = await firestore
           .collection('users/${_userModel.uid}/groups')
           .get()
@@ -177,21 +178,21 @@ class AccessServices extends ChangeNotifier {
     required void Function(String message) showSnackBar,
   }) async {
     try {
-      showLoading(true);
       if (username.text.isEmpty ||
           email.text.isEmpty ||
           password.text.isEmpty ||
           confirmPassword.text.isEmpty) {
         showSnackBar("Isi Semua Form");
-        throw Exception();
+        return false;
       }
       if (password.text.length < 8) {
         showSnackBar("Password Minimal 8 Karakter");
-        throw Exception();
+        return false;
       } else if (password.text != confirmPassword.text) {
         showSnackBar("Password tidak sama");
-        throw Exception();
+        return false;
       }
+      showLoading(true);
       email.text = email.text.toLowerCase();
       await _auth.createUserWithEmailAndPassword(
         email: email.text,
@@ -282,11 +283,11 @@ class AccessServices extends ChangeNotifier {
     required void Function(String message) showSnackBar,
   }) async {
     try {
-      showLoading(true);
       if (email.text.isEmpty || password.text.length < 5) {
         showSnackBar("Isi Email dan Password Anda");
-        throw Exception();
+        return false;
       }
+      showLoading(true);
       email.text = email.text.toLowerCase();
       await _auth.signInWithEmailAndPassword(
         email: email.text,
